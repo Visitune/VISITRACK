@@ -161,7 +161,7 @@ const SupplierHub: React.FC = () => {
    );
 
    const FormField = ({ label, value, onChange, placeholder, type = "text", readOnly = !isEditMode }: any) => (
-      <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 transition-all focus-within:ring-2 focus-within:ring-indigo-500/10 focus-within:border-indigo-200">
+      <div className="p-4 bg-slate-50 rounded-lg border border-slate-100 transition-all focus-within:ring-2 focus-within:ring-indigo-500/10 focus-within:border-indigo-200">
          <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">{label}</label>
          <input
             type={type}
@@ -178,7 +178,7 @@ const SupplierHub: React.FC = () => {
       <div className="space-y-6 h-full flex flex-col relative pb-10">
 
          {/* Header UI */}
-         <div className="flex flex-col xl:flex-row justify-between items-center gap-6 bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 animate-fade-in">
+         <div className="flex flex-col xl:flex-row justify-between items-center gap-6 bg-white p-6 rounded-xl shadow-sm border border-slate-100 animate-fade-in">
             <div className="flex flex-col md:flex-row gap-6 w-full xl:w-auto">
                <div className="relative w-full md:w-96 group">
                   <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
@@ -213,7 +213,7 @@ const SupplierHub: React.FC = () => {
          </div>
 
          {/* Main List */}
-         <div className="flex-1 overflow-hidden bg-white rounded-[44px] shadow-sm border border-slate-100 flex flex-col">
+         <div className="flex-1 overflow-hidden bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col">
             <div className="overflow-y-auto flex-1 scrollbar-hide">
                <table className="min-w-full divide-y divide-slate-100">
                   <thead className="bg-slate-50/80 sticky top-0 backdrop-blur-xl z-20">
@@ -267,7 +267,7 @@ const SupplierHub: React.FC = () => {
                   <div className="p-10 border-b border-slate-100 bg-slate-50/50 flex flex-col gap-8">
                      <div className="flex justify-between items-start">
                         <div className="flex items-center gap-8">
-                           <div className="w-20 h-20 bg-slate-900 text-white rounded-[28px] flex items-center justify-center text-4xl font-black shadow-xl">
+                           <div className="w-20 h-20 bg-slate-900 text-white rounded-xl flex items-center justify-center text-4xl font-black shadow-xl">
                               {selectedSupplier.name.charAt(0)}
                            </div>
                            <div>
@@ -290,7 +290,7 @@ const SupplierHub: React.FC = () => {
                      </div>
 
                      {/* Tab Navigation */}
-                     <div className="flex gap-1 p-1 bg-slate-100 rounded-2xl self-start overflow-x-auto no-scrollbar">
+                     <div className="flex gap-1 p-1 bg-slate-100 rounded-lg self-start overflow-x-auto no-scrollbar">
                         {[
                            { id: 'IDENTITY', label: 'Identité', icon: Building2 },
                            { id: 'INDUSTRIAL', label: 'Données Industrielles', icon: Landmark },
@@ -531,7 +531,7 @@ const SupplierHub: React.FC = () => {
          {/* Add Supplier Modal */}
          {isModalOpen && (
             <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/60 backdrop-blur-xl p-4 animate-fade-in">
-               <div className="bg-white rounded-[48px] shadow-2xl w-full max-w-2xl p-12 border border-slate-100 relative">
+               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-12 border border-slate-100 relative">
                   <button onClick={() => setIsModalOpen(false)} className="absolute top-10 right-10 p-4 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-all"><X className="w-6 h-6 text-slate-400" /></button>
                   <h3 className="text-4xl font-black text-slate-900 tracking-tight mb-4 uppercase">Identité Partenaire</h3>
                   <p className="text-slate-400 font-bold uppercase tracking-widest text-[11px] mb-12">Initialisation d'un nouveau dossier fournisseur enterprise.</p>
@@ -576,7 +576,7 @@ const SupplierHub: React.FC = () => {
                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Email de contact principal</label>
                         <input name="email" type="email" className="w-full bg-slate-50 border border-slate-200 rounded-3xl p-5 font-bold outline-none" placeholder="qualite@partenaire.com" />
                      </div>
-                     <button type="submit" className="w-full py-6 bg-slate-900 text-white rounded-[32px] font-black uppercase tracking-[0.2em] text-xs shadow-2xl hover:bg-black transition-all mt-6">
+                     <button type="submit" className="w-full py-6 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl hover:bg-black transition-all mt-6">
                         Créer le Dossier
                      </button>
                   </form>
@@ -586,7 +586,7 @@ const SupplierHub: React.FC = () => {
          {/* Bulk Import Modal */}
          {isBulkModalOpen && (
             <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/60 backdrop-blur-xl p-4 animate-fade-in">
-               <div className="bg-white rounded-[48px] shadow-2xl w-full max-w-2xl p-12 border border-slate-100 relative">
+               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-12 border border-slate-100 relative">
                   <button onClick={() => setIsBulkModalOpen(false)} className="absolute top-10 right-10 p-4 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-all"><X className="w-6 h-6 text-slate-400" /></button>
                   <div className="flex items-center gap-4 mb-4">
                      <div className="p-3 bg-emerald-50 text-emerald-600 rounded-2xl">

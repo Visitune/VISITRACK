@@ -59,7 +59,7 @@ const INITIAL_DATA: Supplier[] = [
     id: 'SUP-001',
     name: 'BioGarden France',
     country: 'France',
-    contactEmail: 'contact@biogarden.fr',
+    contactEmail: 'qualite@biogarden.fr',
     website: 'https://biogarden.fr',
     siret: '892 102 921 00021',
     labels: ['Bio UE', 'HVE', 'Ecovadis Gold'],
@@ -70,12 +70,17 @@ const INITIAL_DATA: Supplier[] = [
     complianceStatus: ComplianceStatus.COMPLIANT,
     documents: [],
     nonConformities: [],
-    attachments: [],
+    attachments: [
+      { id: 'ATT-1', fileName: 'Plan_HACCP_2024.pdf', fileType: 'application/pdf', size: '2.4 MB', uploadDate: '2023-11-15T10:00:00Z', content: '' },
+      { id: 'ATT-2', fileName: 'Audit_Interne_Q1.pdf', fileType: 'application/pdf', size: '1.1 MB', uploadDate: '2024-02-01T09:30:00Z', content: '' }
+    ],
     contacts: [
-      { id: 'C1', name: 'Jean Dupont', role: 'Qualité', email: 'j.dupont@biogarden.fr' }
+      { id: 'C1', name: 'Jean Dupont', role: 'Qualité', email: 'j.dupont@biogarden.fr', phone: '+33 6 12 34 56 78' },
+      { id: 'C2', name: 'Marie Vasseur', role: 'Commercial', email: 'm.vasseur@biogarden.fr', phone: '+33 6 98 76 54 32' }
     ],
     commentaries: [
-      { id: 'COM1', author: 'Système', text: 'Référencement initial validé.', timestamp: new Date().toISOString(), category: 'GENERAL' }
+      { id: 'COM1', author: 'Système', text: 'Référencement initial validé.', timestamp: '2023-10-01T10:00:00Z', category: 'GENERAL' },
+      { id: 'COM2', author: 'Admin', text: 'Audit annuel prévu en Mai 2024.', timestamp: '2024-01-15T14:30:00Z', category: 'QUALITY' }
     ],
     industrialInfo: {
       address: '12 Rue de la Ferme',
@@ -93,15 +98,7 @@ const INITIAL_DATA: Supplier[] = [
         origin: 'France',
         ingredients: ['Tomates de plein champ'],
         allergens: [],
-        versions: [
-          {
-            id: 'V1',
-            timestamp: '2023-12-01T10:00:00Z',
-            author: 'System',
-            ingredients: ['Tomates de plein champ'],
-            allergens: []
-          }
-        ]
+        versions: [{ id: 'V1', timestamp: '2023-12-01T10:00:00Z', author: 'System', ingredients: ['Tomates'], allergens: [] }]
       }
     ],
     approvalStatus: 'APPROVED',
@@ -120,7 +117,150 @@ const INITIAL_DATA: Supplier[] = [
         minorNonConformities: 2
       }
     ],
+    receptionControls: [
+      { id: 'RC-1', date: '2024-02-01', materialId: 'MAT-001', lotNumber: 'L-24-033', supplierLotNumber: 'SUP-L-033', quantity: 500, unit: 'kg', physicalChecks: { temperature: 4.2, temperatureLimit: 6, visualAspect: 'CONFORM', smell: 'NORMAL', packagingIntegrity: true }, documentaryChecks: { sanitaryCertificate: true, analysisResults: true, traceability: true, labeling: true }, decision: 'ACCEPTED', operator: 'Martin L.' },
+      { id: 'RC-2', date: '2024-01-25', materialId: 'MAT-001', lotNumber: 'L-24-020', supplierLotNumber: 'SUP-L-020', quantity: 450, unit: 'kg', physicalChecks: { temperature: 5.1, temperatureLimit: 6, visualAspect: 'CONFORM', smell: 'NORMAL', packagingIntegrity: true }, documentaryChecks: { sanitaryCertificate: true, analysisResults: true, traceability: true, labeling: true }, decision: 'ACCEPTED_CONDITIONAL', remarks: 'Température limite', operator: 'Martin L.' }
+    ]
+  },
+  {
+    id: 'SUP-002',
+    name: 'Global Spices Import',
+    country: 'India',
+    contactEmail: 'export@globalspices.in',
+    website: 'https://globalspices.in',
+    siret: 'IN-8829102',
+    labels: [],
+    riskScore: 78,
+    esgScore: 40,
+    status: 'ACTIVE',
+    onboardingStep: 'VALIDATED',
+    complianceStatus: ComplianceStatus.REJECTED,
+    documents: [],
+    nonConformities: [
+      { id: 'NC-1', createdAt: '2024-01-10', dueDate: '2024-02-10', title: 'Allergène Non Déclaré', severity: 'CRITICAL', description: 'Traces d\'allergènes non déclarés (Arachide) détectés dans le Curry.', status: 'OPEN', correctiveAction: 'Rappel de lot immédiat.' }
+    ],
+    attachments: [],
+    contacts: [
+      { id: 'C3', name: 'Raj Patel', role: 'Directeur Export', email: 'raj@globalspices.in' }
+    ],
+    commentaries: [
+      { id: 'COM3', author: 'Qualité', text: 'Attention : Risque de fraude élevé sur le safran et le curcuma. Analyse systématique requise.', timestamp: '2023-11-20T09:00:00Z', category: 'QUALITY' }
+    ],
+    industrialInfo: {
+      address: '45 Spice Market Road',
+      city: 'Mumbai',
+      zipCode: '400001',
+      vatNumber: 'IN MH 28391',
+      employeeCount: 200,
+      factoryCertifications: ['BRC Food', 'Halal']
+    },
+    products: [
+      { id: 'P2', name: 'Curry Powder Mix', category: 'Epices', origin: 'India', ingredients: ['Curcuma', 'Coriandre', 'Cumin'], allergens: ['Moutarde'], versions: [] }
+    ],
+    approvalStatus: 'APPROVED_CONDITIONAL',
+    gfsiCertificates: [
+      {
+        id: 'CERT-002',
+        type: 'BRCGS',
+        version: 'Issue 9',
+        score: 85.0,
+        grade: 'B',
+        validFrom: '2023-06-01',
+        validUntil: '2024-06-01',
+        scope: 'Grinding and blending of spices.',
+        certificationBody: 'SGS',
+        majorNonConformities: 1,
+        minorNonConformities: 4
+      }
+    ],
     receptionControls: []
+  },
+  {
+    id: 'SUP-003',
+    name: 'PackIndustry Solutions',
+    country: 'Germany',
+    contactEmail: 'sales@packindustry.de',
+    website: 'https://packindustry.de',
+    siret: 'DE 9928192',
+    labels: ['ISO 14001'],
+    riskScore: 5,
+    esgScore: 90,
+    status: 'PENDING',
+    onboardingStep: 'DOCS_PENDING',
+    complianceStatus: ComplianceStatus.PENDING,
+    documents: [],
+    nonConformities: [],
+    attachments: [],
+    contacts: [
+      { id: 'C4', name: 'Hans Mueller', role: 'Qualité', email: 'h.mueller@packindustry.de' }
+    ],
+    commentaries: [],
+    industrialInfo: {
+      address: 'Industriestrasse 10',
+      city: 'Hamburg',
+      zipCode: '20095',
+      vatNumber: 'DE 882910',
+      employeeCount: 500,
+      factoryCertifications: ['ISO 9001', 'BRC Packaging']
+    },
+    products: [
+      { id: 'P3', name: 'Barquette PET Recyclé', category: 'Emballage', origin: 'EU', ingredients: ['rPET'], allergens: [], versions: [] }
+    ],
+    approvalStatus: 'PENDING_DOCS',
+    gfsiCertificates: [],
+    receptionControls: []
+  },
+  {
+    id: 'SUP-004',
+    name: 'AgroFrozen Belgium',
+    country: 'Belgium',
+    contactEmail: 'quality@agrofrozen.be',
+    website: 'https://agrofrozen.be',
+    siret: 'BE 0449.123.456',
+    labels: ['Bio UE'],
+    riskScore: 25,
+    esgScore: 65,
+    status: 'ACTIVE',
+    onboardingStep: 'VALIDATED',
+    complianceStatus: ComplianceStatus.EXPIRED,
+    documents: [],
+    nonConformities: [],
+    attachments: [],
+    contacts: [],
+    commentaries: [
+      { id: 'COM4', author: 'Logistique', text: 'Retard de livraison fréquent le vendredi.', timestamp: '2024-01-05T10:00:00Z', category: 'LOGISTICS' }
+    ],
+    industrialInfo: {
+      address: 'Zone Portuaire 5',
+      city: 'Anvers',
+      zipCode: '2000',
+      vatNumber: 'BE 0449123456',
+      employeeCount: 150,
+      factoryCertifications: ['IFS Food']
+    },
+    products: [
+      { id: 'P4', name: 'Epinards Hachés Surgelés', category: 'Légumes Surgelés', origin: 'Belgium', ingredients: ['Epinards', 'Crème'], allergens: ['Lait'], versions: [] }
+    ],
+    approvalStatus: 'APPROVED',
+    gfsiCertificates: [
+      {
+        id: 'CERT-003',
+        type: 'IFS',
+        version: 'Food v7',
+        score: 94.0,
+        grade: 'Higher Level',
+        validFrom: '2022-12-01',
+        validUntil: '2023-12-01', /* EXPIRED */
+        scope: 'Deep freezing of vegetables.',
+        certificationBody: 'TÜV Nord',
+        majorNonConformities: 0,
+        minorNonConformities: 1
+      }
+    ],
+    receptionControls: [
+      { id: 'RC-3', date: '2024-02-05', materialId: 'MAT-003', lotNumber: 'AF-992', supplierLotNumber: 'SL-992', quantity: 2000, unit: 'kg', physicalChecks: { temperature: -21, temperatureLimit: -18, visualAspect: 'CONFORM', smell: 'NORMAL', packagingIntegrity: true }, documentaryChecks: { sanitaryCertificate: true, analysisResults: true, traceability: true, labeling: true }, decision: 'ACCEPTED', operator: 'Sophie D.' },
+      { id: 'RC-4', date: '2024-01-20', materialId: 'MAT-003', lotNumber: 'AF-881', supplierLotNumber: 'SL-881', quantity: 2000, unit: 'kg', physicalChecks: { temperature: -15, temperatureLimit: -18, visualAspect: 'NON_CONFORM', smell: 'NORMAL', packagingIntegrity: true }, documentaryChecks: { sanitaryCertificate: true, analysisResults: true, traceability: true, labeling: true }, decision: 'REJECTED', remarks: 'Rupture chaîne froid (> -18°C)', operator: 'Sophie D.' }
+    ]
   }
 ];
 
@@ -150,6 +290,45 @@ const INITIAL_RAW_MATERIALS: RawMaterial[] = [
     fraudVulnerability: 'MEDIUM',
     fraudRisks: ['Pesticides non autorisés'],
     approvedSuppliers: ['SUP-001']
+  },
+  {
+    id: 'MAT-003',
+    name: 'Epinards Surgelés',
+    category: 'Légumes Surgelés',
+    riskLevel: 'MEDIUM',
+    requiresGFSICertificate: true,
+    requiredDocuments: ['IFS/BRC'],
+    allergens: [],
+    crossContaminationRisk: [],
+    fraudVulnerability: 'LOW',
+    fraudRisks: [],
+    approvedSuppliers: ['SUP-004']
+  },
+  {
+    id: 'MAT-004',
+    name: 'Curry Powder',
+    category: 'Epices',
+    riskLevel: 'HIGH',
+    requiresGFSICertificate: true,
+    requiredDocuments: ['Analyse Soudan rouge', 'Certificat Halal'],
+    allergens: ['Moutarde', 'Céleri (trace)'],
+    crossContaminationRisk: ['Allergènes'],
+    fraudVulnerability: 'HIGH',
+    fraudRisks: ['Ajout colorants interdits', 'Agents de charge'],
+    approvedSuppliers: ['SUP-002']
+  },
+  {
+    id: 'MAT-005',
+    name: 'Film PET 30µm',
+    category: 'Emballage',
+    riskLevel: 'LOW',
+    requiresGFSICertificate: true,
+    requiredDocuments: ['Certificat Alimentarité', 'Migration Globale'],
+    allergens: [],
+    crossContaminationRisk: [],
+    fraudVulnerability: 'LOW',
+    fraudRisks: [],
+    approvedSuppliers: ['SUP-003']
   }
 ];
 

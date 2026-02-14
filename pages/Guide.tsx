@@ -1,9 +1,8 @@
 import React from 'react';
 import {
-    BookOpen, ShieldCheck, Zap, Database, Globe, ArrowRight,
-    Award, FileSearch, Send, Layers, MessageSquare, Download,
-    CheckCircle2, AlertTriangle, LifeBuoy, Terminal, FileSpreadsheet,
-    Rocket, ExternalLink
+    ShieldCheck, Zap, Database, Send,
+    FileSpreadsheet, LifeBuoy, Terminal, Layers,
+    ArrowRight, Sparkles, Box, FileText, Globe
 } from 'lucide-react';
 
 const GuidePage: React.FC = () => {
@@ -12,71 +11,81 @@ const GuidePage: React.FC = () => {
             title: "Dossier Industriel 360°",
             icon: Database,
             color: "indigo",
-            desc: "Gestion granulaire des partenaires : coordonnées bancaires (IBAN/BIC), fiscalité (SIRET/TVA), données de production et contacts de secours.",
-            features: ["Multi-contacts par site", "Données financières", "Géolocalisation du siège"]
+            desc: "Centralisation complète des données partenaires. Gérez les informations critiques : coordonnées bancaires (IBAN/BIC), données fiscales (SIRET/TVA), capacités de production et contacts d'urgence. Une vue unifiée pour sécuriser votre référentiel fournisseur.",
+            features: ["Structure Multi-sites", "Conformité Financière", "Traçabilité des Contacts"]
         },
         {
             title: "Moteur de GED & Archives",
             icon: ShieldCheck,
             color: "emerald",
-            desc: "Uploadez tout type de fichier (PDF, Photos d'audit, Tableaux Excel) directement dans le dossier fournisseur. Les données sont compressées localement.",
-            features: ["Upload illimité", "Compression par lot", "Historique horodaté"]
+            desc: "Système de Gestion Électronique de Documents intégré. Archivez certificats, rapports d'audit, et spécifications techniques directement dans le dossier fournisseur. Support du glisser-déposer et prévisualisation instantanée.",
+            features: ["Stockage Sécurisé", "Formats Universels", "Historique de Version"]
         },
         {
-            title: "Analyse OCR Gemini v1.5",
+            title: "Analyse IA Gemini",
             icon: Zap,
             color: "amber",
-            desc: "L'intelligence artificielle analyse vos certificats IFS/BRC. Elle extrait les dates, les scores et suggère un statut de conformité sans intervention humaine.",
-            features: ["Extraction de dates", "Calcul de confiance", "Alerte de péremption"]
+            desc: "L'intelligence artificielle Google Gemini analyse vos certificats GFSI (IFS, BRC, FSSC). Elle détecte automatiquement les dates de validité, les scores d'audit et les périmètres de certification pour alerter sur les non-conformités.",
+            features: ["OCR Intelligent", "Détection des Scopes", "Alertes Prédictives"]
         },
         {
             title: "Campagnes de Collecte",
             icon: Send,
             color: "rose",
-            desc: "Automatisez la relance de vos fournisseurs. Créez des campagnes massives pour récolter des documents manquants avec suivi du taux de réponse.",
-            features: ["Emails de masse", "Dashboards live", "Relance automatique"]
+            desc: "Automatisez les campagnes de mise à jour documentaire. Ciblez des groupes de fournisseurs pour réclamer les pièces manquantes ou échues. Suivez le taux de réponse en temps réel via des tableaux de bord dynamiques.",
+            features: ["Relances Automatisées", "Tracking des Emails", "Workflow de Validation"]
         },
         {
-            title: "Import de Masse Excel",
+            title: "Import de Masse & API",
             icon: FileSpreadsheet,
             color: "indigo",
-            desc: "Onboardez des centaines de fournisseurs en quelques secondes. VISITrack mappe automatiquement vos colonnes Excel vers le dossier industriel.",
-            features: ["Parsing .xlsx & .csv", "Mapping intelligent", "Dédoublonnage"]
+            desc: "Accélérez l'onboarding fournisseur grâce à l'import Excel/CSV intelligent. Le système mappe automatiquement vos colonnes pour créer des centaines de dossiers en quelques secondes, sans saisie manuelle.",
+            features: ["Mapping Auto-apprenant", "Détection de Doublons", "Rapports d'Intégration"]
+        },
+        {
+            title: "Catalogue PDM",
+            icon: Box,
+            color: "cyan",
+            desc: "Product Data Management simplifié. Liez les matières premières aux fournisseurs, gérez les versions des fiches techniques et suivez les origines géographiques des ingrédients pour une traçabilité totale.",
+            features: ["Versionning Recettes", "Origines & Labels", "Lien Fournisseur-Article"]
         }
     ];
 
     return (
-        <div className="max-w-6xl mx-auto space-y-16 animate-fade-in pb-20">
+        <div className="max-w-6xl mx-auto space-y-12 animate-fade-in pb-20">
             {/* Hero Section */}
             <div className="text-center space-y-6 pt-10">
-                <div className="inline-flex items-center gap-2 px-6 py-2 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-sm">
-                    <LifeBuoy className="w-4 h-4" /> VISITrack Enterprise v7 • Documentation Officielle
+                <div className="inline-flex items-center gap-2 px-6 py-2 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-sm border border-indigo-100">
+                    <LifeBuoy className="w-4 h-4" /> Documentation Officielle • v7.2
                 </div>
-                <h1 className="text-6xl font-black text-slate-900 tracking-tighter">
-                    Maîtrisez votre <span className="bg-gradient-to-r from-indigo-600 to-indigo-400 bg-clip-text text-transparent italic">Compliance.</span>
+                <h1 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter">
+                    Pilotage de la <span className="text-indigo-600">Conformité Fournisseur.</span>
                 </h1>
                 <p className="text-slate-500 max-w-3xl mx-auto text-lg font-medium leading-relaxed">
-                    VISITrack est votre centre de commande pour la conformité technique et industrielle.
-                    Structurez vos audits, automatisez vos relances et sécurisez vos données PDM au même endroit.
+                    VISITrack centralise la gestion de vos partenaires industriels.
+                    De l'analyse automatique des certificats à la traçabilité des matières premières,
+                    maîtrisez chaque étape de votre chaîne d'approvisionnement.
                 </p>
             </div>
 
             {/* Core Modules Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {modules.map((m, i) => (
-                    <div key={i} className="group bg-white p-10 rounded-[44px] border border-slate-100 shadow-sm hover:shadow-2xl hover:border-indigo-100 transition-all duration-500">
-                        <div className="flex items-start gap-8">
-                            <div className={`p-6 bg-indigo-50 rounded-3xl text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 shadow-inner`}>
+                    <div key={i} className="group bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-indigo-200 transition-all duration-300">
+                        <div className="flex items-start gap-6">
+                            <div className={`p-4 bg-${m.color}-50 rounded-xl text-${m.color}-600 group-hover:bg-${m.color}-600 group-hover:text-white transition-all duration-300 shadow-sm`}>
                                 <m.icon className="w-8 h-8" />
                             </div>
-                            <div className="space-y-4">
-                                <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">{m.title}</h3>
-                                <p className="text-slate-500 font-medium text-sm leading-relaxed">
+                            <div className="space-y-4 flex-1">
+                                <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">{m.title}</h3>
+                                <p className="text-slate-500 font-medium text-sm leading-relaxed border-l-2 border-slate-100 pl-4">
                                     {m.desc}
                                 </p>
                                 <div className="flex flex-wrap gap-2 pt-2">
                                     {m.features.map(f => (
-                                        <span key={f} className="bg-slate-50 text-slate-400 py-1 px-3 rounded-lg text-[9px] font-black uppercase tracking-widest">{f}</span>
+                                        <span key={f} className="bg-slate-50 text-slate-500 border border-slate-100 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase tracking-widest group-hover:border-indigo-100 transition-colors">
+                                            {f}
+                                        </span>
                                     ))}
                                 </div>
                             </div>
@@ -85,109 +94,90 @@ const GuidePage: React.FC = () => {
                 ))}
             </div>
 
-            {/* Vercel Deployment Section */}
-            <div className="bg-indigo-600 rounded-[56px] p-16 text-white relative overflow-hidden shadow-2xl">
-                <Rocket className="absolute -right-20 -bottom-20 w-80 h-80 text-white/10 rotate-12" />
-                <div className="relative z-10 max-w-2xl">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 rounded-full text-[9px] font-black uppercase tracking-widest mb-6">
-                        <ExternalLink className="w-3 h-3" /> Quick Deploy
-                    </div>
-                    <h2 className="text-4xl font-black tracking-tight mb-6">Déployez VISITrack sur Vercel</h2>
-                    <p className="text-indigo-100 text-lg mb-8 font-medium leading-relaxed">
-                        Transformez VISITrack en votre application SaaS personnelle en 2 minutes. Vos utilisateurs pourront gérer leurs propres fournisseurs en toute autonomie.
-                    </p>
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-4 bg-black/10 p-4 rounded-2xl border border-white/5">
-                            <div className="w-8 h-8 rounded-full bg-white text-indigo-600 flex items-center justify-center font-black text-xs">1</div>
-                            <p className="text-sm font-bold">Connectez votre repo GitHub à Vercel.</p>
-                        </div>
-                        <div className="flex items-center gap-4 bg-black/10 p-4 rounded-2xl border border-white/5">
-                            <div className="w-8 h-8 rounded-full bg-white text-indigo-600 flex items-center justify-center font-black text-xs">2</div>
-                            <p className="text-sm font-bold">L'application est détectée comme un projet Vite.</p>
-                        </div>
-                        <div className="flex items-center gap-4 bg-black/10 p-4 rounded-2xl border border-white/5">
-                            <div className="w-8 h-8 rounded-full bg-white text-indigo-600 flex items-center justify-center font-black text-xs">3</div>
-                            <p className="text-sm font-bold">Chaque collaborateur travaille dans son propre bac à sable local.</p>
-                        </div>
-                    </div>
-                    <button className="mt-10 px-8 py-4 bg-white text-indigo-600 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-105 transition-all">
-                        Consulter le guide de déploiement
-                    </button>
-                </div>
-            </div>
-
             {/* Technical Workflow Section */}
-            <div className="bg-slate-900 rounded-[56px] p-16 text-white relative overflow-hidden shadow-2xl">
-                <div className="absolute top-0 right-0 p-16 opacity-10">
-                    <Layers className="w-96 h-96 -mr-32 -mt-32" />
+            <div className="bg-slate-900 rounded-3xl p-12 text-white relative overflow-hidden shadow-2xl">
+                <div className="absolute top-0 right-0 opacity-10 pointer-events-none">
+                    <Layers className="w-96 h-96 -mr-20 -mt-20 text-indigo-500" />
                 </div>
 
-                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div className="space-y-8">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 rounded-full text-[9px] font-black uppercase tracking-widest ring-1 ring-white/20">
-                            <Terminal className="w-3 h-3" /> Architecture Zero-Server
+                            <Terminal className="w-3 h-3" /> Architecture Sécurisée
                         </div>
-                        <h2 className="text-4xl font-black tracking-tight">Sécurité des Données <br /> & Sauvegardes</h2>
+                        <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-tight">
+                            Souveraineté des Données <br /> & Performance Locale
+                        </h2>
                         <div className="space-y-6">
-                            <div className="flex gap-6">
-                                <div className="w-12 h-12 shrink-0 bg-white/10 rounded-2xl flex items-center justify-center font-black text-indigo-400">1</div>
-                                <p className="text-slate-400 text-sm font-medium leading-relaxed">
-                                    <strong className="text-white">Local Storage (Persistance) :</strong> Vos dossiers fournisseurs sont stockés dans votre navigateur. Aucune donnée n'est envoyée dans le cloud VISITrack.
-                                </p>
+                            <div className="flex gap-6 group">
+                                <div className="w-12 h-12 shrink-0 bg-white/5 rounded-xl flex items-center justify-center font-black text-indigo-400 border border-white/10 group-hover:bg-indigo-500 group-hover:text-white transition-all">1</div>
+                                <div>
+                                    <h4 className="text-white font-bold text-sm mb-1">Local Storage Chiffré</h4>
+                                    <p className="text-slate-400 text-xs font-medium leading-relaxed">
+                                        Vos données sensibles restent dans votre navigateur. Aucune donnée critique ne transite par des serveurs tiers non maîtrisés.
+                                    </p>
+                                </div>
                             </div>
-                            <div className="flex gap-6">
-                                <div className="w-12 h-12 shrink-0 bg-white/10 rounded-2xl flex items-center justify-center font-black text-indigo-400">2</div>
-                                <p className="text-slate-400 text-sm font-medium leading-relaxed">
-                                    <strong className="text-white">Export de Package :</strong> Utilisez régulièrement le bouton <span className="text-white italic">"Sauvegarder Pack"</span> en bas de la barre latérale pour générer un fichier JSON de sauvegarde complète.
-                                </p>
+                            <div className="flex gap-6 group">
+                                <div className="w-12 h-12 shrink-0 bg-white/5 rounded-xl flex items-center justify-center font-black text-indigo-400 border border-white/10 group-hover:bg-indigo-500 group-hover:text-white transition-all">2</div>
+                                <div>
+                                    <h4 className="text-white font-bold text-sm mb-1">Sauvegardes JSON</h4>
+                                    <p className="text-slate-400 text-xs font-medium leading-relaxed">
+                                        Exportez l'intégralité de votre base (fournisseurs, fichiers, contacts) en un clic via le format JSON universel pour l'archivage.
+                                    </p>
+                                </div>
                             </div>
-                            <div className="flex gap-6">
-                                <div className="w-12 h-12 shrink-0 bg-white/10 rounded-2xl flex items-center justify-center font-black text-indigo-400">3</div>
-                                <p className="text-slate-400 text-sm font-medium leading-relaxed">
-                                    <strong className="text-white">Restauration :</strong> Importez votre package JSON sur n'importe quel poste pour retrouver instantanément vos fournisseurs et documents.
-                                </p>
+                            <div className="flex gap-6 group">
+                                <div className="w-12 h-12 shrink-0 bg-white/5 rounded-xl flex items-center justify-center font-black text-indigo-400 border border-white/10 group-hover:bg-indigo-500 group-hover:text-white transition-all">3</div>
+                                <div>
+                                    <h4 className="text-white font-bold text-sm mb-1">Portabilité Totale</h4>
+                                    <p className="text-slate-400 text-xs font-medium leading-relaxed">
+                                        Restaurez votre environnement de travail sur n'importe quel poste sécurisé instantanément, sans installation complexe.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white/5 rounded-[40px] p-10 border border-white/10 space-y-8">
-                        <h4 className="text-xs font-black uppercase tracking-widest text-indigo-400">FAQ Expert</h4>
-                        <div className="space-y-6">
-                            <div className="group cursor-help">
-                                <p className="font-bold text-sm mb-2 group-hover:text-indigo-400 transition-colors">Ma clé API Gemini est-elle sécurisée ?</p>
-                                <p className="text-xs text-slate-500 leading-relaxed">Oui, elle est stockée localement. Nous ne la voyons jamais. Elle n'est utilisée que par votre navigateur pour appeler Google.</p>
+                    <div className="bg-white/5 rounded-2xl p-8 border border-white/10 space-y-6 backdrop-blur-sm">
+                        <div className="flex items-center gap-3 mb-4">
+                            <Sparkles className="w-5 h-5 text-amber-400" />
+                            <h4 className="text-xs font-black uppercase tracking-widest text-white">FAQ Technique</h4>
+                        </div>
+                        <div className="space-y-4 divide-y divide-white/5">
+                            <div className="pt-4 first:pt-0">
+                                <p className="font-bold text-sm mb-2 text-indigo-200">Comment fonctionne l'IA Gemini ?</p>
+                                <p className="text-xs text-slate-400 leading-relaxed">
+                                    Le navigateur envoie uniquement le texte extrait des PDF à l'API Google sécurisée. Les fichiers originaux ne sont pas stockés par Google pour l'entraînement (selon configuration Enterprise).
+                                </p>
                             </div>
-                            <div className="group cursor-help">
-                                <p className="font-bold text-sm mb-2 group-hover:text-indigo-400 transition-colors">Puis-je uploader des vidéos usine ?</p>
-                                <p className="text-xs text-slate-500 leading-relaxed">C'est possible via l'onglet GED, mais attention : la limite de stockage du navigateur est d'environ 5-10 Mo selon l'OS. Privilégiez les photos compressées.</p>
+                            <div className="pt-4">
+                                <p className="font-bold text-sm mb-2 text-indigo-200">Limites de stockage ?</p>
+                                <p className="text-xs text-slate-400 leading-relaxed">
+                                    Le stockage local dépend de votre navigateur (généralement 5-10 Mo pour le LocalStorage, plus pour IndexedDB). Pour les gros volumes, privilégiez l'export régulier.
+                                </p>
                             </div>
-                            <div className="group cursor-help border-t border-white/5 pt-6">
-                                <button className="flex items-center gap-3 text-indigo-400 font-black text-[10px] uppercase tracking-widest hover:gap-5 transition-all">
-                                    Contacter le Support Technique <ArrowRight className="w-4 h-4" />
-                                </button>
-                            </div>
+                        </div>
+                        <div className="pt-6 mt-4 border-t border-white/10">
+                            <button className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg">
+                                Consulter la documentation technique
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Bottom Call to Action */}
-            <div className="flex flex-col items-center gap-8 py-10">
-                <div className="flex gap-4">
-                    <div className="flex -space-x-3">
-                        {[1, 2, 3, 4].map(i => (
-                            <div key={i} className="w-12 h-12 rounded-full border-4 border-[#F8F9FC] bg-slate-200 flex items-center justify-center text-xs font-black text-slate-400 uppercase">
-                                {String.fromCharCode(64 + i)}
-                            </div>
-                        ))}
-                    </div>
-                    <div className="text-left">
-                        <p className="text-xs font-black text-slate-900 uppercase">Utilisé par vos équipes Qualité</p>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Plus de 1500 dossiers déjà certifiés</p>
-                    </div>
+            <div className="flex flex-col items-center gap-8 py-12 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                <div className="flex flex-col items-center text-center gap-2">
+                    <Globe className="w-10 h-10 text-indigo-600 mb-2" />
+                    <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Prêt à optimiser vos audits ?</h3>
+                    <p className="text-slate-500 text-sm font-medium max-w-md">
+                        Rejoignez les équipes Qualité qui ont réduit leur temps de gestion administrative de 40%.
+                    </p>
                 </div>
-                <button className="px-12 py-5 bg-indigo-600 text-white rounded-3xl font-black uppercase text-xs tracking-widest shadow-2xl shadow-indigo-100 hover:scale-105 transition-all">
-                    Prêt à valider votre prochain fournisseur ?
+                <button className="px-10 py-4 bg-slate-900 text-white rounded-xl font-black uppercase text-xs tracking-widest shadow-xl hover:bg-black hover:scale-105 transition-all flex items-center gap-3">
+                    Accéder au Dashboard <ArrowRight className="w-4 h-4" />
                 </button>
             </div>
         </div>

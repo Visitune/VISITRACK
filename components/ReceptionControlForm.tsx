@@ -87,7 +87,7 @@ export const ReceptionControlForm: React.FC<ReceptionControlFormProps> = ({ supp
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-8 p-6 bg-white rounded-[32px] border border-slate-100 shadow-sm animate-fade-in">
+        <form onSubmit={handleSubmit} className="space-y-8 p-6 bg-white rounded-xl border border-slate-100 shadow-sm animate-fade-in">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight flex items-center gap-3">
                     <ClipboardCheck className="w-6 h-6 text-indigo-600" /> Nouveau Contrôle à Réception
@@ -98,7 +98,7 @@ export const ReceptionControlForm: React.FC<ReceptionControlFormProps> = ({ supp
                 {/* Basic Info */}
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        <div className="p-4 bg-slate-50 rounded-lg border border-slate-100">
                             <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">Date</label>
                             <input
                                 type="date"
@@ -107,7 +107,7 @@ export const ReceptionControlForm: React.FC<ReceptionControlFormProps> = ({ supp
                                 onChange={e => setFormData({ ...formData, date: e.target.value })}
                             />
                         </div>
-                        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        <div className="p-4 bg-slate-50 rounded-lg border border-slate-100">
                             <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">Opérateur</label>
                             <input
                                 type="text"
@@ -270,7 +270,7 @@ export const ReceptionControlForm: React.FC<ReceptionControlFormProps> = ({ supp
                     />
                 </div>
 
-                <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                <div className="p-6 bg-slate-50 rounded-xl border border-slate-100">
                     <label className="text-[9px] font-black text-slate-400 uppercase block mb-2">Commentaires / Réserves</label>
                     <textarea
                         className="w-full bg-transparent font-medium text-sm outline-none min-h-[80px] resize-none"
@@ -290,7 +290,7 @@ export const ReceptionControlForm: React.FC<ReceptionControlFormProps> = ({ supp
                 </button>
                 <button
                     type="submit"
-                    className="px-10 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-black transition-all flex items-center gap-3"
+                    className="px-10 py-4 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-black transition-all flex items-center gap-3"
                 >
                     <Save className="w-5 h-5" /> Valider la Réception
                 </button>
@@ -304,8 +304,8 @@ const CheckToggle = ({ label, active, onClick }: { label: string, active: boolea
         type="button"
         onClick={onClick}
         className={`p-4 rounded-xl flex items-center justify-between border transition-all ${active
-                ? 'bg-emerald-50 border-emerald-100 text-emerald-700'
-                : 'bg-slate-50/50 border-slate-100 text-slate-400'
+            ? 'bg-emerald-50 border-emerald-100 text-emerald-700'
+            : 'bg-slate-50/50 border-slate-100 text-slate-400'
             }`}
     >
         <span className="text-[11px] font-bold">{label}</span>
