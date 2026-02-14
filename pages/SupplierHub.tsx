@@ -6,10 +6,10 @@ import { GFSIApprovalTab } from '../components/GFSIApprovalTab';
 import { SupplierGEDTab } from '../components/SupplierGEDTab';
 import {
    Search, MapPin, Plus, X, Globe, Building2,
-   ShieldCheck, Clock, AlertTriangle,
-   ChevronRight, Edit3, Save, Trash2, UserPlus,
-   Filter, Landmark, Truck, Shield, FileDown,
-   FileSpreadsheet, UploadCloud, ChevronDown, MoreHorizontal
+   ShieldCheck, Activity, ChevronRight, Edit3, Save, Trash2,
+   UserPlus, Filter, Landmark, FileSpreadsheet, UploadCloud,
+   MoreHorizontal, FileDown, CheckCircle, FolderClosed,
+   LayoutGrid, Factory, History, Share2, Contact, Users
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
@@ -130,10 +130,13 @@ const SupplierHub: React.FC = () => {
    // UI Components
    const SectionHeader = ({ icon: Icon, title, badge }: { icon: any, title: string, badge?: string }) => (
       <div className="flex justify-between items-center mb-6">
-         <h3 className="text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-widest flex items-center gap-3">
-            <Icon className="w-4 h-4 text-[var(--accent)]" /> {title}
+         <h3 className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.3em] flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center">
+               <Icon className="w-4 h-4 text-[var(--accent)]" />
+            </div>
+            {title}
          </h3>
-         {badge && <span className="bg-[var(--accent)]/10 text-[var(--accent)] px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest">{badge}</span>}
+         {badge && <span className="bg-[var(--accent)] text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20">{badge}</span>}
       </div>
    );
 
@@ -279,11 +282,11 @@ const SupplierHub: React.FC = () => {
             )}
          </div>
 
-         {/* Extreme Granular Sidebar Redesign */}
+         {/* Modern Centric Command Center */}
          {selectedSupplier && (
-            <div className="fixed inset-0 z-50 flex justify-end animate-fade-in">
-               <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedSupplier(null)}></div>
-               <div className="relative w-full max-w-6xl bg-[var(--bg-card)] h-full border-l border-[var(--border-subtle)] shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col animate-slide-right overflow-hidden">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-6 animate-fade-in overflow-hidden">
+               <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md" onClick={() => setSelectedSupplier(null)}></div>
+               <div className="relative w-full max-w-7xl h-[90vh] bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-[40px] shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden animate-slide-up">
 
                   <div className="p-8 pb-4 border-b border-[var(--border-subtle)] bg-[var(--bg-main)]/30">
                      <div className="flex justify-between items-start mb-6">
@@ -319,11 +322,11 @@ const SupplierHub: React.FC = () => {
                      <div className="flex gap-1 p-1 bg-[var(--bg-main)]/50 border border-[var(--border-subtle)] rounded-xl w-full overflow-x-auto no-scrollbar">
                         {[
                            { id: 'IDENTITY', label: 'Identité', icon: Building2 },
-                           { id: 'INDUSTRIAL', label: 'Industriel', icon: Landmark },
+                           { id: 'INDUSTRIAL', label: 'Industriel', icon: Factory },
                            { id: 'GFSI', label: 'GFSI', icon: ShieldCheck },
-                           { id: 'GED', label: 'GED', icon: UploadCloud },
-                           { id: 'PDM', label: 'Produits', icon: Landmark },
-                           { id: 'JOURNAL', label: 'Journal', icon: MoreHorizontal }
+                           { id: 'GED', label: 'GED', icon: FolderClosed },
+                           { id: 'PDM', label: 'Produits', icon: LayoutGrid },
+                           { id: 'JOURNAL', label: 'Journal', icon: History }
                         ].map(t => (
                            <button
                               key={t.id}
@@ -342,144 +345,135 @@ const SupplierHub: React.FC = () => {
                      </div>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto scrollbar-hide p-8 bg-[var(--bg-main)]/10">
+                  <div className="flex-1 overflow-hidden p-8 bg-[var(--bg-main)]/5">
+                     <div className="grid grid-cols-12 grid-rows-6 gap-6 h-full bento-stagger">
 
-                     {/* TAB: IDENTITY */}
-                     {activeTab === 'IDENTITY' && (
-                        <div className="space-y-8 animate-fade-in">
-                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                              <FormField label="Nom Commercial" value={selectedSupplier.name} readOnly={true} />
-                              <FormField label="Email Principal" value={selectedSupplier.contactEmail} onChange={(v: string) => updateSupplier(selectedSupplier.id, { contactEmail: v })} />
-                              <FormField label="Téléphone" placeholder="+33..." onChange={(v: string) => { }} />
-                              <FormField label="Site Web" value={selectedSupplier.website} placeholder="www.example.com" onChange={(v: string) => updateSupplier(selectedSupplier.id, { website: v })} />
-                              <FormField label="Code Fournisseur" value={selectedSupplier.code} placeholder="S00001" onChange={(v: string) => updateSupplier(selectedSupplier.id, { code: v })} />
-                              <FormField label="Classification" value={selectedSupplier.classification} placeholder="Direct / Indirect" onChange={(v: string) => updateSupplier(selectedSupplier.id, { classification: v })} />
-                           </div>
-
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                              <section className="space-y-4">
-                                 <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest pl-1">Siège Social</h3>
-                                 <div className="space-y-4 p-6 bg-[var(--bg-main)]/20 border border-[var(--border-subtle)] rounded-2xl">
-                                    <FormField label="Adresse" value={selectedSupplier.address} placeholder="123 Rue du Commerce" onChange={(v: string) => updateSupplier(selectedSupplier.id, { address: v })} />
-                                    <div className="grid grid-cols-2 gap-4">
-                                       <FormField label="Ville" value={selectedSupplier.city} placeholder="Paris" onChange={(v: string) => updateSupplier(selectedSupplier.id, { city: v })} />
-                                       <FormField label="Code Postal" value={selectedSupplier.zipCode} placeholder="75000" onChange={(v: string) => updateSupplier(selectedSupplier.id, { zipCode: v })} />
-                                    </div>
-                                 </div>
-                              </section>
-
-                              <section className="space-y-4">
-                                 <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest pl-1">Informations Administratives</h3>
-                                 <div className="space-y-4 p-6 bg-[var(--bg-main)]/20 border border-[var(--border-subtle)] rounded-2xl">
-                                    <FormField label="SIRET / VAT" placeholder="FR..." />
-                                    <FormField label="IBAN" placeholder="FR76..." />
-                                 </div>
-                              </section>
-                           </div>
-
-                           <section className="space-y-4">
-                              <h3 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest flex items-center gap-2">
-                                 <UserPlus className="w-4 h-4" /> Contacts Tiers
-                              </h3>
+                        {/* Main Identity Card */}
+                        <div className="col-span-12 lg:col-span-8 row-span-3 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8 flex flex-col">
+                           <div className="space-y-6">
+                              <SectionHeader icon={Contact} title="Informations Générales" />
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                 {selectedSupplier.contacts?.map(c => (
-                                    <div key={c.id} className="p-5 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl shadow-sm hover:border-[var(--accent)] transition-all group relative overflow-hidden">
-                                       <div className="flex items-center gap-4 relative z-10">
-                                          <div className="w-10 h-10 bg-[var(--bg-main)] rounded-full flex items-center justify-center font-bold text-[var(--accent)] border border-[var(--border-subtle)]">
-                                             {c.name.charAt(0)}
-                                          </div>
-                                          <div className="flex-1 min-w-0">
-                                             <p className="font-bold text-sm truncate">{c.name}</p>
-                                             <p className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-wider">{c.role}</p>
-                                          </div>
-                                       </div>
-                                       <div className="mt-4 flex flex-col gap-1.5 relative z-10">
-                                          <div className="flex items-center gap-2 text-[10px] text-[var(--text-secondary)]">
-                                             <div className="w-1 h-1 rounded-full bg-[var(--accent)]"></div>
-                                             {c.email}
-                                          </div>
-                                       </div>
-                                       <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                          <Edit3 className="w-3.5 h-3.5 text-[var(--text-muted)] cursor-pointer hover:text-[var(--accent)]" />
-                                       </div>
-                                    </div>
-                                 ))}
-                                 <button className="h-full min-h-[100px] border-2 border-dashed border-[var(--border-subtle)] rounded-2xl flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all group">
-                                    <div className="w-10 h-10 rounded-full border-2 border-dashed border-[var(--border-subtle)] flex items-center justify-center mb-2 group-hover:border-[var(--accent)] group-hover:scale-110 transition-all">
-                                       <Plus className="w-5 h-5" />
-                                    </div>
-                                    <span className="text-[10px] font-bold uppercase tracking-widest">Ajouter un Contact</span>
-                                 </button>
+                                 <FormField label="Nom Commercial" value={selectedSupplier.name} readOnly={true} />
+                                 <FormField label="Code Fournisseur" value={selectedSupplier.code} placeholder="S00001" onChange={(v: string) => updateSupplier(selectedSupplier.id, { code: v })} />
+                                 <FormField label="Email Principal" value={selectedSupplier.contactEmail} onChange={(v: string) => updateSupplier(selectedSupplier.id, { contactEmail: v })} />
+                                 <FormField label="Téléphone" placeholder="+33..." onChange={(v: string) => { }} />
+                                 <FormField label="Site Web" value={selectedSupplier.website} placeholder="www.example.com" onChange={(v: string) => updateSupplier(selectedSupplier.id, { website: v })} />
+                                 <FormField label="Classification" value={selectedSupplier.classification} placeholder="Direct / Indirect" onChange={(v: string) => updateSupplier(selectedSupplier.id, { classification: v })} />
                               </div>
-                           </section>
+                           </div>
+                           <div className="mt-8">
+                              <SectionHeader icon={Building2} title="Siège Social" />
+                              <div className="space-y-4 mt-4">
+                                 <FormField label="Adresse" value={selectedSupplier.address} placeholder="123 Rue du Commerce" onChange={(v: string) => updateSupplier(selectedSupplier.id, { address: v })} />
+                                 <div className="grid grid-cols-2 gap-4">
+                                    <FormField label="Ville" value={selectedSupplier.city} placeholder="Paris" onChange={(v: string) => updateSupplier(selectedSupplier.id, { city: v })} />
+                                    <FormField label="Code Postal" value={selectedSupplier.zipCode} placeholder="75000" onChange={(v: string) => updateSupplier(selectedSupplier.id, { zipCode: v })} />
+                                 </div>
+                              </div>
+                           </div>
                         </div>
-                     )}
 
-                     {/* TAB: INDUSTRIAL */}
-                     {activeTab === 'INDUSTRIAL' && (
-                        <div className="space-y-8 animate-fade-in">
-                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {/* Contacts Card */}
+                        <div className="col-span-12 lg:col-span-4 row-span-4 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8 flex flex-col">
+                           <SectionHeader icon={Users} title="Contacts Tiers" badge={selectedSupplier.contacts?.length.toString() || '0'} />
+                           <div className="flex-1 overflow-y-auto space-y-4 pr-2 -mr-2 scrollbar-hide">
+                              {selectedSupplier.contacts?.map(c => (
+                                 <div key={c.id} className="p-4 bg-[var(--bg-main)]/30 border border-[var(--border-subtle)] rounded-xl shadow-sm hover:border-[var(--accent)] transition-all group relative">
+                                    <div className="flex items-center gap-3">
+                                       <div className="w-8 h-8 bg-[var(--accent)]/10 rounded-full flex items-center justify-center font-bold text-[var(--accent)] text-xs">
+                                          {c.name.charAt(0)}
+                                       </div>
+                                       <div className="flex-1 min-w-0">
+                                          <p className="font-bold text-sm truncate">{c.name}</p>
+                                          <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">{c.role}</p>
+                                       </div>
+                                    </div>
+                                    <div className="mt-3 flex items-center gap-2 text-[10px] text-[var(--text-secondary)]">
+                                       <div className="w-1 h-1 rounded-full bg-[var(--accent)]"></div>
+                                       {c.email}
+                                    </div>
+                                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                       <Edit3 className="w-3.5 h-3.5 text-[var(--text-muted)] cursor-pointer hover:text-[var(--accent)]" />
+                                    </div>
+                                 </div>
+                              ))}
+                              <button className="w-full h-24 border-2 border-dashed border-[var(--border-subtle)] rounded-xl flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all group">
+                                 <Plus className="w-5 h-5 mb-1" />
+                                 <span className="text-[10px] font-bold uppercase tracking-widest">Ajouter un Contact</span>
+                              </button>
+                           </div>
+                        </div>
+
+                        {/* Industrial Info Card */}
+                        <div className="col-span-12 lg:col-span-4 row-span-3 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8 flex flex-col">
+                           <SectionHeader icon={Factory} title="Informations Industrielles" />
+                           <div className="space-y-4 mt-6">
                               <FormField label="TVA Intracom." value={selectedSupplier.industrialInfo?.vatNumber} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, vatNumber: v } })} />
                               <FormField label="DUNS Number" value={selectedSupplier.industrialInfo?.dunsNumber} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, dunsNumber: v } })} />
                               <FormField label="Chiffre d'Affaire" value={selectedSupplier.industrialInfo?.annualRevenue} placeholder="Ex: 5M€" onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, annualRevenue: v } })} />
                            </div>
-
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                              <section className="space-y-4">
-                                 <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest pl-1">Capacité & Logistique</h3>
-                                 <div className="space-y-4 p-6 bg-[var(--bg-main)]/20 border border-[var(--border-subtle)] rounded-2xl">
-                                    <FormField label="Adresse du Site" value={selectedSupplier.industrialInfo?.address} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, address: v } })} />
-                                    <FormField label="Ville de Production" value={selectedSupplier.industrialInfo?.city} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, city: v } })} />
-                                 </div>
-                              </section>
-
-                              <section className="space-y-4">
-                                 <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest pl-1">Évaluation Industrielle</h3>
-                                 <div className="space-y-4 p-6 bg-[var(--bg-main)]/20 border border-[var(--border-subtle)] rounded-2xl">
-                                    <div className="bg-[var(--bg-card)] p-4 rounded-xl border border-[var(--border-subtle)]">
-                                       <p className="text-[9px] font-bold text-[var(--text-muted)] uppercase mb-2">Score de Risque Industriel</p>
-                                       <div className="flex items-center gap-4">
-                                          <div className="flex-1 h-2 bg-[var(--bg-main)] rounded-full overflow-hidden">
-                                             <div className="h-full bg-amber-500 w-[65%]" />
-                                          </div>
-                                          <span className="text-sm font-black">65%</span>
-                                       </div>
-                                    </div>
-                                 </div>
-                              </section>
+                           <div className="mt-8">
+                              <SectionHeader icon={MapPin} title="Site de Production" />
+                              <div className="space-y-4 mt-4">
+                                 <FormField label="Adresse du Site" value={selectedSupplier.industrialInfo?.address} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, address: v } })} />
+                                 <FormField label="Ville de Production" value={selectedSupplier.industrialInfo?.city} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, city: v } })} />
+                              </div>
                            </div>
                         </div>
-                     )}
 
-                     {/* TAB: GFSI */}
-                     {activeTab === 'GFSI' && selectedSupplier && (
-                        <div className="animate-fade-in">
+                        {/* Risk & Compliance Card */}
+                        <div className="col-span-12 lg:col-span-4 row-span-2 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-6 flex flex-col justify-between">
+                           <SectionHeader icon={Activity} title="Score de Risque" />
+                           <div className="flex items-center gap-6">
+                              <div className="relative w-20 h-20 flex items-center justify-center shrink-0">
+                                 <svg className="w-full h-full" viewBox="0 0 100 100">
+                                    <circle className="text-[var(--border-subtle)] stroke-current" strokeWidth="10" cx="50" cy="50" r="40" fill="transparent"></circle>
+                                    <circle
+                                       className={`${selectedSupplier.riskScore > 60 ? 'text-rose-500' : 'text-emerald-500'} stroke-current transition-all duration-1000`}
+                                       strokeWidth="10"
+                                       strokeLinecap="round"
+                                       cx="50"
+                                       cy="50"
+                                       r="40"
+                                       fill="transparent"
+                                       strokeDasharray={`${selectedSupplier.riskScore * 2.51}, 251`}
+                                       transform="rotate(-90 50 50)"
+                                    ></circle>
+                                 </svg>
+                                 <span className="absolute text-xl font-black">{selectedSupplier.riskScore}%</span>
+                              </div>
+                              <div className="flex-1">
+                                 <ComplianceBadge status={selectedSupplier.complianceStatus} size="sm" />
+                                 <p className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-widest mt-2">Dernier Audit: Passé</p>
+                              </div>
+                           </div>
+                        </div>
+
+                        {/* GFSI Approval Card */}
+                        <div className="col-span-12 lg:col-span-6 xl:col-span-6 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8">
                            <GFSIApprovalTab supplier={selectedSupplier} />
                         </div>
-                     )}
 
-                     {/* TAB: GED */}
-                     {activeTab === 'GED' && selectedSupplier && (
-                        <div className="animate-fade-in">
+                        {/* GED Documents Card */}
+                        <div className="col-span-12 lg:col-span-6 xl:col-span-6 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8">
                            <SupplierGEDTab supplier={selectedSupplier} />
                         </div>
-                     )}
 
-                     {/* TAB: PDM */}
-                     {activeTab === 'PDM' && (
-                        <div className="space-y-6 animate-fade-in">
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Products Card */}
+                        <div className="col-span-12 lg:col-span-6 xl:col-span-6 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8 flex flex-col">
+                           <SectionHeader icon={LayoutGrid} title="Produits Référencés" badge={selectedSupplier.products?.length.toString() || '0'} />
+                           <div className="flex-1 overflow-y-auto space-y-4 pr-2 -mr-2 scrollbar-hide mt-6">
                               {selectedSupplier.products?.map(p => (
-                                 <div key={p.id} className="p-5 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl shadow-sm hover:border-[var(--accent)] transition-all group">
-                                    <div className="flex justify-between items-start mb-4">
-                                       <div className="p-3 bg-[var(--accent)]/10 rounded-xl">
-                                          <Truck className="w-5 h-5 text-[var(--accent)]" />
+                                 <div key={p.id} className="p-4 bg-[var(--bg-main)]/30 border border-[var(--border-subtle)] rounded-xl shadow-sm hover:border-[var(--accent)] transition-all group">
+                                    <div className="flex justify-between items-start mb-3">
+                                       <div className="p-2 bg-[var(--accent)]/10 rounded-lg">
+                                          <LayoutGrid className="w-4 h-4 text-[var(--accent)]" />
                                        </div>
-                                       <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest bg-[var(--bg-main)] px-2 py-1 rounded">V{p.versions?.[0]?.version || '1.0'}</span>
+                                       <span className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-widest bg-[var(--bg-main)] px-2 py-1 rounded">V{p.versions?.[0]?.version || '1.0'}</span>
                                     </div>
                                     <h4 className="font-bold text-sm mb-1">{p.name}</h4>
-                                    <p className="text-[10px] text-[var(--text-muted)] font-medium mb-4">{p.category}</p>
-                                    <div className="flex justify-between items-center pt-4 border-t border-[var(--border-subtle)]">
+                                    <p className="text-[10px] text-[var(--text-muted)] font-medium mb-3">{p.category}</p>
+                                    <div className="flex justify-between items-center pt-3 border-t border-[var(--border-subtle)]">
                                        <span className="text-[10px] font-bold text-[var(--success)]">{p.status}</span>
                                        <button className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest flex items-center gap-1 group-hover:gap-2 transition-all">
                                           Fiche technique <ChevronRight className="w-3 h-3" />
@@ -487,112 +481,69 @@ const SupplierHub: React.FC = () => {
                                     </div>
                                  </div>
                               ))}
-                              <button className="h-full min-h-[160px] border-2 border-dashed border-[var(--border-subtle)] rounded-2xl flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all">
-                                 <Plus className="w-6 h-6 mb-2" />
+                              <button className="w-full h-24 border-2 border-dashed border-[var(--border-subtle)] rounded-xl flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all group">
+                                 <Plus className="w-5 h-5 mb-1" />
                                  <span className="text-[10px] font-bold uppercase tracking-widest">Nouveau Produit</span>
                               </button>
                            </div>
                         </div>
-                     )}
 
-                     {/* TAB: JOURNAL */}
-                     {activeTab === 'JOURNAL' && (
-                        <div className="space-y-8 animate-fade-in pb-10">
-                           <div className="bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl p-6 shadow-sm focus-within:ring-2 focus-within:ring-[var(--accent)]/10 transition-all">
-                              <div className="flex items-center gap-3 mb-4">
-                                 <div className="w-8 h-8 rounded-full bg-[var(--accent)]/10 flex items-center justify-center text-[var(--accent)]">
-                                    <Edit3 className="w-4 h-4" />
-                                 </div>
-                                 <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-primary)]">Nouvelle Note d'Audit</h4>
-                              </div>
-                              <textarea
-                                 placeholder="Décrivez ici les discussions, points d'attention ou conclusions d'audit..."
-                                 className="w-full h-32 bg-[var(--bg-main)]/30 rounded-xl p-4 text-sm resize-none outline-none border border-transparent focus:border-[var(--accent)]/30 transition-all"
-                                 value={newCommentText}
-                                 onChange={(e) => setNewCommentText(e.target.value)}
-                              />
-                              <div className="flex justify-between items-center mt-4">
-                                 <div className="flex gap-2">
-                                    {['GENERAL', 'QUALITY', 'LOGISTICS'].map(cat => (
-                                       <button
-                                          key={cat}
-                                          onClick={() => setCommentCategory(cat as any)}
-                                          className={`px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all ${commentCategory === cat ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-main)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
-                                       >
-                                          {cat}
-                                       </button>
-                                    ))}
-                                 </div>
-                                 <button
-                                    onClick={handleAddComment}
-                                    disabled={!newCommentText}
-                                    className="px-8 py-2.5 bg-[var(--accent)] text-white text-[10px] font-bold uppercase tracking-wider rounded-xl disabled:opacity-50 shadow-lg shadow-indigo-500/20 active:scale-95 transition-all"
-                                 >
-                                    Diffuser la Note
-                                 </button>
-                              </div>
-                           </div>
-
-                           <div className="relative pl-8 space-y-8 before:absolute before:left-[15px] before:top-2 before:bottom-2 before:w-0.5 before:bg-[var(--border-subtle)]">
-                              {selectedSupplier.commentaries?.length === 0 ? (
-                                 <div className="text-center py-10 text-[var(--text-muted)] text-[11px] italic">Aucune note historique pour le moment.</div>
-                              ) : (
-                                 selectedSupplier.commentaries?.sort((a, b) => b.timestamp - a.timestamp).map((c, idx) => (
-                                    <div key={c.id} className="relative group">
-                                       <div className={`absolute -left-[31px] top-1 w-4 h-4 rounded-full border-4 border-[var(--bg-card)] shadow-sm z-10 transition-all group-hover:scale-125 ${idx === 0 ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-muted)]'}`}></div>
-                                       <div className="bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
-                                          <div className="flex justify-between items-start mb-4">
-                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-[var(--bg-main)] flex items-center justify-center font-bold text-[var(--accent)] text-xs">
-                                                   {c.author.charAt(0)}
-                                                </div>
-                                                <div>
-                                                   <p className="text-xs font-bold">{c.author}</p>
-                                                   <p className="text-[10px] text-[var(--text-muted)] font-medium">{new Date(c.timestamp).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-                                                </div>
-                                             </div>
-                                             <span className={`px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${c.category === 'QUALITY' ? 'bg-amber-500/10 text-amber-500' :
-                                                c.category === 'LOGISTICS' ? 'bg-indigo-500/10 text-indigo-500' :
-                                                   'bg-slate-500/10 text-slate-500'
-                                                }`}>
-                                                {c.category}
-                                             </span>
-                                          </div>
-                                          <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{c.text}</p>
-                                       </div>
+                        {/* Journal Card */}
+                        <div className="col-span-12 lg:col-span-4 row-span-3 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8 flex flex-col overflow-hidden">
+                           <SectionHeader icon={History} title="Notes d'Audit" badge={selectedSupplier.commentaries?.length.toString() || '0'} />
+                           <div className="flex-1 overflow-y-auto space-y-4 pr-2 -mr-2 scrollbar-hide">
+                              {selectedSupplier.commentaries?.sort((a, b) => b.timestamp - a.timestamp).map((c, idx) => (
+                                 <div key={c.id} className="p-4 bg-[var(--bg-main)]/30 border border-[var(--border-subtle)] rounded-xl relative group">
+                                    <div className="flex justify-between items-start mb-2">
+                                       <span className="text-[9px] font-black text-[var(--accent)] uppercase tracking-tighter">{c.author}</span>
+                                       <span className="text-[8px] text-[var(--text-muted)]">{new Date(c.timestamp).toLocaleDateString()}</span>
                                     </div>
-                                 ))
-                              )}
+                                    <p className="text-[11px] text-[var(--text-secondary)] line-clamp-2">{c.text}</p>
+                                 </div>
+                              ))}
                            </div>
+                           <button className="mt-4 w-full py-2 bg-[var(--accent)]/5 border border-[var(--accent)]/10 rounded-xl text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest hover:bg-[var(--accent)]/10 transition-all">
+                              Ajouter une note
+                           </button>
                         </div>
-                     )}
+                     </div>
                   </div>
 
-                  {/* Sticky Premium Actions Footer */}
-                  <div className="p-6 bg-[var(--bg-card)]/80 backdrop-blur-xl border-t border-[var(--border-subtle)] flex justify-between items-center px-10 shrink-0">
-                     <div className="flex items-center gap-6">
-                        <button className="flex items-center gap-2 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] uppercase tracking-widest transition-all group">
-                           <FileDown className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" /> Dossier Complet
-                        </button>
-                        <button className="flex items-center gap-2 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] uppercase tracking-widest transition-all group">
-                           <Globe className="w-4 h-4 group-hover:rotate-12 transition-transform" /> Site Fournisseur
-                        </button>
+                  {/* Fixed Footer with Premium Effects */}
+                  <div className="p-8 bg-[var(--bg-card)]/80 backdrop-blur-2xl border-t border-[var(--border-subtle)] flex justify-between items-center shrink-0">
+                     <div className="flex items-center gap-8">
+                        <div className="flex flex-col">
+                           <span className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest">Dernière mise à jour</span>
+                           <span className="text-xs font-bold">Aujourd'hui, 14:15</span>
+                        </div>
+                        <div className="w-px h-8 bg-[var(--border-subtle)]" />
+                        <div className="flex gap-4">
+                           <button className="flex items-center gap-2 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] uppercase tracking-[0.2em] transition-all group">
+                              <FileDown className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" /> Exporter PDF
+                           </button>
+                           <button className="flex items-center gap-2 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] uppercase tracking-[0.2em] transition-all group">
+                              <Share2 className="w-4 h-4 group-hover:scale-110 transition-transform" /> Partager
+                           </button>
+                        </div>
                      </div>
-                     <div className="flex items-center gap-3">
-                        <button
-                           onClick={() => { setIsEditMode(false); }}
-                           className={`px-6 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all hover:bg-rose-500/5 ${isEditMode ? 'bg-rose-500/10 text-rose-500' : 'hidden'}`}
-                        >
-                           Annuler
-                        </button>
+
+                     <div className="flex items-center gap-4">
+                        {isEditMode && (
+                           <button
+                              onClick={() => setIsEditMode(false)}
+                              className="px-8 py-3.5 rounded-2xl text-[11px] font-bold uppercase tracking-widest text-rose-500 hover:bg-rose-500/5 transition-all"
+                           >
+                              Annuler
+                           </button>
+                        )}
                         <button
                            onClick={() => setIsEditMode(!isEditMode)}
-                           className={`flex items-center gap-2 px-10 py-3.5 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all shadow-lg active:scale-95 ${isEditMode
-                              ? 'bg-emerald-500 text-white shadow-emerald-500/20 hover:bg-emerald-600'
-                              : 'bg-[var(--accent)] text-white shadow-indigo-500/20 hover:opacity-90'
+                           className={`flex items-center gap-3 px-12 py-4 rounded-[22px] text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl active:scale-95 ${isEditMode
+                              ? 'bg-emerald-500 text-white shadow-emerald-500/30'
+                              : 'bg-[var(--accent)] text-white shadow-indigo-500/30'
                               }`}
                         >
-                           {isEditMode ? <><Save className="w-4 h-4" /> Enregistrer les modifications</> : <><Edit3 className="w-4 h-4" /> Modifier les informations</>}
+                           {isEditMode ? <><Save className="w-5 h-5" /> Confirmer les modifications</> : <><Edit3 className="w-5 h-5" /> Passer en Edition</>}
                         </button>
                      </div>
                   </div>
