@@ -2,7 +2,8 @@ export enum ComplianceStatus {
   COMPLIANT = 'COMPLIANT',
   PENDING = 'PENDING',
   EXPIRED = 'EXPIRED',
-  REJECTED = 'REJECTED'
+  REJECTED = 'REJECTED',
+  NON_COMPLIANT = 'NON_COMPLIANT'
 }
 
 export type OnboardingStep = 'NEW' | 'DOCS_PENDING' | 'REVIEW' | 'VALIDATED';

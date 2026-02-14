@@ -3,6 +3,7 @@ import { Supplier, ComplianceStatus, OnboardingStep, NonConformity, Product, Doc
 import { useWorkspace } from '../context/WorkspaceContext';
 import ComplianceBadge from '../components/ComplianceBadge';
 import { GFSIApprovalTab } from '../components/GFSIApprovalTab';
+import { SupplierGEDTab } from '../components/SupplierGEDTab';
 import {
    Search, MapPin, FileText, Box, Plus, X, Globe, Building2,
    Mail, ShieldCheck, List, Clock, AlertTriangle, CheckCircle2,
@@ -27,8 +28,6 @@ const SupplierHub: React.FC = () => {
    // Commentary State
    const [newCommentText, setNewCommentText] = useState('');
    const [commentCategory, setCommentCategory] = useState<'QUALITY' | 'PURCHASING' | 'LOGISTICS' | 'GENERAL'>('GENERAL');
-
-   const fileInputRef = useRef<HTMLInputElement>(null);
    const excelInputRef = useRef<HTMLInputElement>(null);
 
    const handleExcelImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,30 +124,6 @@ const SupplierHub: React.FC = () => {
       setNewCommentText('');
    };
 
-   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file && selectedSupplier) {
-         if (file.size > 2 * 1024 * 1024) {
-            addNotification({
-               title: 'Fichier trop lourd',
-               message: 'Pour préserver les performances du navigateur, évitez les fichiers > 2 Mo.',
-               type: 'WARNING'
-            });
-         }
-
-         const reader = new FileReader();
-         reader.onload = (event) => {
-            const base64Content = event.target?.result as string;
-            addAttachmentToSupplier(selectedSupplier.id, {
-               fileName: file.name,
-               fileType: file.type,
-               size: `${(file.size / 1024).toFixed(1)} KB`,
-               content: base64Content
-            });
-         };
-         reader.readAsDataURL(file);
-      }
-   };
 
    // UI Components
    const SectionHeader = ({ icon: Icon, title, badge }: { icon: any, title: string, badge?: string }) => (
@@ -403,63 +378,8 @@ const SupplierHub: React.FC = () => {
                      )}
 
                      {/* TAB: GED */}
-                     {activeTab === 'GED' && (
-                        <div className="space-y-8 animate-fade-in">
-                           <div className="bg-indigo-600 rounded-[32px] p-10 text-white shadow-2xl relative overflow-hidden">
-                              <Sparkles className="absolute -right-10 -bottom-10 w-64 h-64 text-white/5" />
-                              <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
-                                 <div className="max-w-md">
-                                    <h3 className="text-2xl font-black uppercase tracking-tight mb-3">Cloud Drive Intégré</h3>
-                                    <p className="text-indigo-100 text-sm font-medium leading-relaxed">Centralisez tous les fichiers bruts (PDF, Tableaux, Photos d'Usine) qui ne sont pas des certificats de conformité classiques.</p>
-                                 </div>
-                                 <button onClick={() => fileInputRef.current?.click()} className="px-8 py-4 bg-white text-indigo-600 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:scale-105 transition-all">
-                                    Uploader un fichier
-                                 </button>
-                                 <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
-                              </div>
-                           </div>
-
-                           <div className="grid grid-cols-1 gap-4">
-                              <SectionHeader icon={FileText} title="Fichiers Archivés" badge={`${selectedSupplier.attachments?.length || 0} fichier(s)`} />
-                              {selectedSupplier.attachments?.map(a => (
-                                 <div key={a.id} className="p-6 bg-white border border-slate-100 rounded-3xl flex items-center justify-between hover:border-indigo-200 transition-all group">
-                                    <div className="flex items-center gap-6">
-                                       <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all">
-                                          <FileText className="w-6 h-6" />
-                                       </div>
-                                       <div>
-                                          <p className="font-black text-slate-900 text-sm">{a.fileName}</p>
-                                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{a.fileType} • {a.size} • Le {new Date(a.uploadDate).toLocaleDateString()}</p>
-                                       </div>
-                                    </div>
-                                    <div className="flex gap-2">
-                                       <button
-                                          onClick={() => {
-                                             if (a.content) {
-                                                const link = document.createElement('a');
-                                                link.href = a.content;
-                                                link.download = a.fileName;
-                                                link.click();
-                                             } else {
-                                                alert("Ce fichier est un placeholder sans contenu physique.");
-                                             }
-                                          }}
-                                          className="p-3 bg-slate-50 text-slate-500 rounded-xl hover:bg-slate-100"
-                                       >
-                                          <Download className="w-5 h-5" />
-                                       </button>
-                                       <button className="p-3 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-100"><Trash2 className="w-5 h-5" /></button>
-                                    </div>
-                                 </div>
-                              ))}
-                              {(!selectedSupplier.attachments || selectedSupplier.attachments.length === 0) && (
-                                 <div className="p-20 text-center border-2 border-dashed border-slate-100 rounded-[40px]">
-                                    <FileUp className="w-12 h-12 text-slate-200 mx-auto mb-4" />
-                                    <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Glissez un fichier pour le synchroniser</p>
-                                 </div>
-                              )}
-                           </div>
-                        </div>
+                     {activeTab === 'GED' && selectedSupplier && (
+                        <SupplierGEDTab supplier={selectedSupplier} />
                      )}
 
                      {/* TAB: PDM & JOURNAL (Keep existing logic but styled) */}
@@ -528,58 +448,142 @@ const SupplierHub: React.FC = () => {
             </div>
          )}
 
-         {/* Add Supplier Modal */}
+         {/* Add Supplier Modal - Professional Wizard */}
          {isModalOpen && (
             <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/60 backdrop-blur-xl p-4 animate-fade-in">
-               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-12 border border-slate-100 relative">
-                  <button onClick={() => setIsModalOpen(false)} className="absolute top-10 right-10 p-4 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-all"><X className="w-6 h-6 text-slate-400" /></button>
-                  <h3 className="text-4xl font-black text-slate-900 tracking-tight mb-4 uppercase">Identité Partenaire</h3>
-                  <p className="text-slate-400 font-bold uppercase tracking-widest text-[11px] mb-12">Initialisation d'un nouveau dossier fournisseur enterprise.</p>
+               <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl border border-slate-100 relative overflow-hidden flex flex-col max-h-[90vh]">
 
+                  {/* Modal Header */}
+                  <div className="p-8 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                     <div>
+                        <h3 className="text-2xl font-black text-slate-900 tracking-tight uppercase">Nouveau Partenaire</h3>
+                        <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-1">Initialisation d'un dossier fournisseur</p>
+                     </div>
+                     <button onClick={() => setIsModalOpen(false)} className="p-3 bg-white rounded-xl border border-slate-200 text-slate-400 hover:text-rose-500 hover:border-rose-200 transition-all"><X className="w-5 h-5" /></button>
+                  </div>
+
+                  {/* Wizard Form */}
                   <form onSubmit={(e) => {
                      e.preventDefault();
                      const formData = new FormData(e.currentTarget);
                      const name = formData.get('name') as string;
                      const country = formData.get('country') as string;
                      const contactEmail = formData.get('email') as string;
+                     const siret = formData.get('siret') as string;
+                     const website = formData.get('website') as string;
+                     const city = formData.get('city') as string;
+
                      if (!name || !country || !contactEmail) return;
+
                      const newSup: Supplier = {
                         id: `SUP-${Date.now()}`,
                         name,
                         country,
                         contactEmail,
+                        siret,
+                        website,
                         status: 'NEW',
                         onboardingStep: 'NEW',
                         complianceStatus: ComplianceStatus.PENDING,
-                        riskScore: 50,
+                        riskScore: 100, // Start clean
                         documents: [],
                         products: [],
                         commentaries: [],
-                        contacts: [],
+                        contacts: [
+                           { id: `C-${Date.now()}`, name: 'Contact Principal', role: 'General', email: contactEmail }
+                        ],
                         attachments: [],
-                        nonConformities: []
+                        nonConformities: [],
+                        industrialInfo: { city, address: '', zipCode: '' }
                      };
                      addSupplier(newSup);
                      setIsModalOpen(false);
-                  }} className="space-y-6">
-                     <div className="grid grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Nom de l'entité</label>
-                           <input name="name" type="text" className="w-full bg-slate-50 border border-slate-200 rounded-3xl p-5 font-bold outline-none ring-offset-4 focus:ring-4 focus:ring-slate-900/5 transition-all" placeholder="Ex: BioLuce SARL..." />
+                  }} className="flex-1 overflow-y-auto p-10 space-y-10">
+
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        {/* Section Identity */}
+                        <div className="space-y-6">
+                           <div className="flex items-center gap-3 mb-2">
+                              <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-black text-xs">1</div>
+                              <h4 className="font-black text-slate-900 text-sm uppercase tracking-wide">Identité Légale</h4>
+                           </div>
+
+                           <div className="space-y-4">
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Raison Sociale <span className="text-rose-500">*</span></label>
+                                 <input name="name" required type="text" className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 font-bold text-sm outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 transition-all placeholder:font-normal" placeholder="Ex: BioLuce SARL" />
+                              </div>
+                              <div className="grid grid-cols-2 gap-4">
+                                 <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">SIRET / Tax ID</label>
+                                    <input name="siret" type="text" className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 font-bold text-sm outline-none focus:ring-4 focus:ring-indigo-500/5 transition-all placeholder:font-normal" placeholder="14 chiffres" />
+                                 </div>
+                                 <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Pays <span className="text-rose-500">*</span></label>
+                                    <input name="country" required type="text" className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 font-bold text-sm outline-none focus:ring-4 focus:ring-indigo-500/5 transition-all placeholder:font-normal" placeholder="Ex: France" />
+                                 </div>
+                              </div>
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Site Web</label>
+                                 <div className="relative">
+                                    <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <input name="website" type="url" className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 p-4 font-bold text-sm outline-none focus:ring-4 focus:ring-indigo-500/5 transition-all placeholder:font-normal" placeholder="https://..." />
+                                 </div>
+                              </div>
+                           </div>
                         </div>
-                        <div className="space-y-2">
-                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Pays / Région</label>
-                           <input name="country" type="text" className="w-full bg-slate-50 border border-slate-200 rounded-3xl p-5 font-bold outline-none" placeholder="Ex: France..." />
+
+                        {/* Section Contact & Location */}
+                        <div className="space-y-6">
+                           <div className="flex items-center gap-3 mb-2">
+                              <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-xs">2</div>
+                              <h4 className="font-black text-slate-900 text-sm uppercase tracking-wide">Contact & Localisation</h4>
+                           </div>
+
+                           <div className="space-y-4">
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Email Principal <span className="text-rose-500">*</span></label>
+                                 <div className="relative">
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <input name="email" required type="email" className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 p-4 font-bold text-sm outline-none focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 transition-all placeholder:font-normal" placeholder="qualite@partenaire.com" />
+                                 </div>
+                              </div>
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Ville / Siège</label>
+                                 <div className="relative">
+                                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <input name="city" type="text" className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 p-4 font-bold text-sm outline-none focus:ring-4 focus:ring-indigo-500/5 transition-all placeholder:font-normal" placeholder="Ex: Lyon" />
+                                 </div>
+                              </div>
+                           </div>
+
+                           <div className="p-6 bg-indigo-50 rounded-2xl border border-indigo-100 mt-6">
+                              <div className="flex items-start gap-3">
+                                 <Info className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
+                                 <div>
+                                    <h5 className="font-black text-indigo-900 text-xs uppercase tracking-wide mb-1">Onboarding Automatique</h5>
+                                    <p className="text-[10px] text-indigo-700 leading-relaxed">
+                                       Un email d'invitation sera envoyé à l'adresse indiquée pour que le fournisseur complète ses certificats GFSI.
+                                    </p>
+                                 </div>
+                              </div>
+                           </div>
                         </div>
                      </div>
-                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Email de contact principal</label>
-                        <input name="email" type="email" className="w-full bg-slate-50 border border-slate-200 rounded-3xl p-5 font-bold outline-none" placeholder="qualite@partenaire.com" />
-                     </div>
-                     <button type="submit" className="w-full py-6 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl hover:bg-black transition-all mt-6">
-                        Créer le Dossier
-                     </button>
+
                   </form>
+
+                  {/* Footer Actions */}
+                  <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+                     <button type="button" onClick={() => setIsModalOpen(false)} className="px-8 py-4 rounded-xl text-slate-500 font-bold text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">Annuler</button>
+                     <button onClick={(e) => {
+                        // Trigger form submit programmatically
+                        const form = e.currentTarget.closest('div')?.previousElementSibling as HTMLFormElement;
+                        form?.requestSubmit();
+                     }} className="px-10 py-4 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-xl hover:bg-black transition-all flex items-center gap-3">
+                        <Plus className="w-4 h-4" /> Créer le Dossier
+                     </button>
+                  </div>
                </div>
             </div>
          )}

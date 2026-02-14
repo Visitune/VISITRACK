@@ -6,7 +6,7 @@ import { useWorkspace } from '../context/WorkspaceContext';
 import {
     Shield, Upload, CheckCircle, AlertTriangle, FileText,
     BadgeCheck, Clock, XCircle, Search, Plus, Truck, History,
-    Package, Thermometer, Info, ClipboardCheck
+    Package, Thermometer, Info, ClipboardCheck, Sparkles
 } from 'lucide-react';
 import { ReceptionControlForm } from './ReceptionControlForm';
 
@@ -17,7 +17,8 @@ interface Props {
 export const GFSIApprovalTab: React.FC<Props> = ({ supplier }) => {
     const { settings, addGFSICertificate, updateSupplier, rawMaterials, addRawMaterial } = useWorkspace();
     const [isAnalyzing, setIsAnalyzing] = useState(false);
-    const [analysisResult, setAnalysisResult] = useState<any>(null);
+    const [showCertModal, setShowCertModal] = useState(false);
+    const [pendingCert, setPendingCert] = useState<GFSICertificate | null>(null);
     const [showReceptionForm, setShowReceptionForm] = useState(false);
     const [isAddingMaterial, setIsAddingMaterial] = useState(false);
     const [newMaterial, setNewMaterial] = useState({ name: '', category: '', riskLevel: 'LOW' as any });
@@ -32,7 +33,6 @@ export const GFSIApprovalTab: React.FC<Props> = ({ supplier }) => {
         }
 
         setIsAnalyzing(true);
-        setAnalysisResult(null);
 
         try {
             const reader = new FileReader();
@@ -45,24 +45,23 @@ export const GFSIApprovalTab: React.FC<Props> = ({ supplier }) => {
                     PDF_TEMPLATES.IFS
                 );
 
-                setAnalysisResult(result);
-
                 const newCertificate: GFSICertificate = {
                     id: `CERT-${Date.now()}`,
-                    type: 'IFS',
-                    version: 'IFS Food v8',
-                    score: result.score,
-                    grade: result.grade,
-                    validFrom: result.validFrom,
-                    validUntil: result.validUntil,
-                    scope: result.scope || 'N/A',
-                    certificationBody: result.certificationBody || 'N/A',
+                    type: 'IFS', // Default detection, ideally should come from analysis
+                    version: result.version || 'Unknown',
+                    score: result.score || 0,
+                    grade: result.grade || 'N/A',
+                    validFrom: result.validFrom || new Date().toISOString(),
+                    validUntil: result.validUntil || new Date().toISOString(),
+                    scope: result.scope || 'Scope non détecté',
+                    certificationBody: result.certificationBody || 'Organisme Inconnu',
                     majorNonConformities: result.majorNonConformities || 0,
                     minorNonConformities: result.minorNonConformities || 0,
                     extractedData: result
                 };
 
-                addGFSICertificate(supplier.id, newCertificate);
+                setPendingCert(newCertificate);
+                setShowCertModal(true);
             };
             reader.readAsDataURL(file);
         } catch (error) {
@@ -70,6 +69,16 @@ export const GFSIApprovalTab: React.FC<Props> = ({ supplier }) => {
             alert('Erreur lors de l\'analyse du certificat. Vérifiez votre clé API ou le format du fichier.');
         } finally {
             setIsAnalyzing(false);
+            // Reset input
+            e.target.value = '';
+        }
+    };
+
+    const confirmCertificate = () => {
+        if (pendingCert) {
+            addGFSICertificate(supplier.id, pendingCert);
+            setShowCertModal(false);
+            setPendingCert(null);
         }
     };
 
@@ -340,6 +349,105 @@ export const GFSIApprovalTab: React.FC<Props> = ({ supplier }) => {
                     </div>
                 )}
             </div>
-        </div>
+
+
+            {/* Certificate Review Modal */}
+            {
+                showCertModal && pendingCert && (
+                    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 animate-fade-in">
+                        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl border border-slate-100 flex flex-col max-h-[90vh]">
+                            <div className="p-8 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                                <div>
+                                    <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Validation IA</h3>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Vérifiez les données extraites du certificat</p>
+                                </div>
+                                <button onClick={() => setShowCertModal(false)} className="p-2 bg-white rounded-lg border border-slate-200 text-slate-400 hover:text-rose-500"><XCircle className="w-5 h-5" /></button>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto p-8 space-y-6">
+                                <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100 flex items-start gap-3">
+                                    <Sparkles className="w-5 h-5 text-indigo-600 mt-0.5" />
+                                    <div>
+                                        <h4 className="font-black text-indigo-900 text-xs uppercase">Analyse Gemini Terminée</h4>
+                                        <p className="text-[10px] text-indigo-700">Le moteur IA a détecté un score de <strong className="text-indigo-900">{pendingCert.score}%</strong>. Veuillez confirmer les dates et le scope.</p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Standard</label>
+                                        <select
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold text-xs"
+                                            value={pendingCert.type}
+                                            onChange={e => setPendingCert({ ...pendingCert, type: e.target.value as any })}
+                                        >
+                                            <option value="IFS">IFS Food</option>
+                                            <option value="BRCGS">BRCGS Food</option>
+                                            <option value="FSSC">FSSC 22000</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Version</label>
+                                        <input
+                                            type="text"
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold text-xs"
+                                            value={pendingCert.version}
+                                            onChange={e => setPendingCert({ ...pendingCert, version: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Score (%)</label>
+                                        <input
+                                            type="number"
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold text-xs text-indigo-600"
+                                            value={pendingCert.score}
+                                            onChange={e => setPendingCert({ ...pendingCert, score: parseFloat(e.target.value) })}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Grade</label>
+                                        <input
+                                            type="text"
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold text-xs"
+                                            value={pendingCert.grade}
+                                            onChange={e => setPendingCert({ ...pendingCert, grade: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Valide jusqu'au</label>
+                                        <input
+                                            type="date"
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold text-xs"
+                                            value={pendingCert.validUntil ? new Date(pendingCert.validUntil).toISOString().split('T')[0] : ''}
+                                            onChange={e => setPendingCert({ ...pendingCert, validUntil: new Date(e.target.value).toISOString() })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Scope de Certification</label>
+                                    <textarea
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold text-xs h-24 resize-none"
+                                        value={pendingCert.scope}
+                                        onChange={e => setPendingCert({ ...pendingCert, scope: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3 rounded-b-3xl">
+                                <button onClick={() => setShowCertModal(false)} className="px-6 py-3 rounded-xl text-slate-500 font-bold text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">Annuler</button>
+                                <button onClick={confirmCertificate} className="px-8 py-3 bg-emerald-600 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg hover:bg-emerald-700 transition-all flex items-center gap-2">
+                                    <CheckCircle className="w-4 h-4" /> Valider & Enregistrer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    )
+}
+        </div >
     );
 };

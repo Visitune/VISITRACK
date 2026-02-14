@@ -398,6 +398,49 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   }, [suppliers, campaigns, rawMaterials, crisisCases, settings, notifications, isLoaded]);
 
+  // --- Dynamic Scoring Logic ---
+  const recalculateSupplierRisk = (supplier: Supplier): Supplier => {
+    let score = 100;
+    let newStatus = supplier.complianceStatus;
+
+    // 1. GFSI Certificates Check
+    const hasValidCert = supplier.gfsiCertificates?.some(c => new Date(c.validUntil) > new Date());
+    if (!hasValidCert && supplier.gfsiCertificates && supplier.gfsiCertificates.length > 0) {
+      score -= 30; // Expired or invalid
+    } else if (!supplier.gfsiCertificates || supplier.gfsiCertificates.length === 0) {
+      score -= 10; // No cert yet (less severe if new)
+    }
+
+    // 2. Critical Non-Conformities
+    const criticalNCs = supplier.nonConformities?.filter(nc => nc.severity === 'CRITICAL' && nc.status === 'OPEN') || [];
+    if (criticalNCs.length > 0) {
+      score -= 40 * criticalNCs.length;
+      newStatus = ComplianceStatus.NON_COMPLIANT;
+    }
+
+    // 3. Reception Controls (Last 3 months impact)
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    const recentControls = supplier.receptionControls?.filter(rc => new Date(rc.date) > threeMonthsAgo) || [];
+
+    recentControls.forEach(rc => {
+      if (rc.decision === 'REJECTED') score -= 20;
+      if (rc.decision === 'ACCEPTED_CONDITIONAL') score -= 5;
+    });
+
+    // Clamp Score
+    score = Math.max(0, Math.min(100, score));
+
+    // Determine Status based on Score (if not blocked by Critical NC)
+    if (criticalNCs.length === 0) {
+      if (score < 40) newStatus = ComplianceStatus.NON_COMPLIANT;
+      else if (score < 70 && newStatus === ComplianceStatus.COMPLIANT) newStatus = ComplianceStatus.PENDING; // Downgrade to Risk/Pending
+      else if (score >= 70 && newStatus === ComplianceStatus.NON_COMPLIANT) newStatus = ComplianceStatus.PENDING; // Recovering
+    }
+
+    return { ...supplier, riskScore: score, complianceStatus: newStatus };
+  };
+
   const addSupplier = (supplier: Supplier) => {
     const safeSupplier: Supplier = {
       ...supplier,
@@ -490,7 +533,8 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const addNonConformity = (supplierId: string, nc: NonConformity) => {
     setSuppliers(prev => prev.map(s => {
       if (s.id === supplierId) {
-        return { ...s, nonConformities: [nc, ...s.nonConformities] };
+        const updated = { ...s, nonConformities: [nc, ...s.nonConformities] };
+        return recalculateSupplierRisk(updated);
       }
       return s;
     }));
@@ -610,10 +654,11 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const addGFSICertificate = (supplierId: string, certificate: GFSICertificate) => {
     setSuppliers(prev => prev.map(s => {
       if (s.id === supplierId) {
-        return {
+        const updated = {
           ...s,
           gfsiCertificates: [...(s.gfsiCertificates || []), certificate]
         };
+        return recalculateSupplierRisk(updated);
       }
       return s;
     }));
@@ -627,10 +672,11 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const addReceptionControl = (supplierId: string, control: ReceptionControl) => {
     setSuppliers(prev => prev.map(s => {
       if (s.id === supplierId) {
-        return {
+        const updated = {
           ...s,
           receptionControls: [control, ...(s.receptionControls || [])]
         };
+        return recalculateSupplierRisk(updated);
       }
       return s;
     }));
