@@ -57,6 +57,14 @@ export interface GFSICertificate {
   minorNonConformities: number;
   attachmentId?: string;
   extractedData?: Record<string, any>;
+  findings?: {
+    id: string;
+    description: string;
+    clause?: string;
+    severity: 'MINOR' | 'MAJOR' | 'CRITICAL';
+    status: 'OPEN' | 'CLOSED';
+    correctiveAction?: string;
+  }[];
 }
 
 export interface AnalysisParameter {
@@ -109,6 +117,7 @@ export interface ReceptionControl {
   operator: string;
   photoUrl?: string;
   nonConformityId?: string;
+  labAnalysisId?: string; // Linked lab analysis
 }
 
 export interface RawMaterial {
@@ -123,6 +132,14 @@ export interface RawMaterial {
   fraudVulnerability: 'HIGH' | 'MEDIUM' | 'LOW';
   fraudRisks: string[];
   approvedSuppliers: string[]; // Supplier IDs
+  foodDefenseRisk: 'HIGH' | 'MEDIUM' | 'LOW';
+  defenseMeasures?: string[];
+  vulnerabilityAssessment?: {
+    substitution: number;
+    adulteration: number;
+    counterfeiting: number;
+    overall: number;
+  };
 }
 
 export interface AnnualReview {

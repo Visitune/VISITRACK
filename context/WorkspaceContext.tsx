@@ -41,6 +41,9 @@ interface WorkspaceContextType {
   addCrisisCase: (crisis: CrisisCase) => void;
   updateCrisisCase: (id: string, updates: Partial<CrisisCase>) => void;
   addQuestionnaireToSupplier: (supplierId: string, questionnaire: SupplierQuestionnaire) => void;
+  // Theme Management
+  theme: 'dark' | 'light';
+  toggleTheme: () => void;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
@@ -277,59 +280,23 @@ const INITIAL_RAW_MATERIALS: RawMaterial[] = [
     crossContaminationRisk: [],
     fraudVulnerability: 'LOW',
     fraudRisks: [],
+    foodDefenseRisk: 'LOW',
     approvedSuppliers: ['SUP-001']
-  },
-  {
-    id: 'MAT-002',
-    name: 'Basilic Frais',
-    category: 'Herbes',
-    riskLevel: 'MEDIUM',
-    requiresGFSICertificate: true,
-    requiredDocuments: ['GlobalGAP'],
-    allergens: [],
-    crossContaminationRisk: [],
-    fraudVulnerability: 'MEDIUM',
-    fraudRisks: ['Pesticides non autorisés'],
-    approvedSuppliers: ['SUP-001']
-  },
-  {
-    id: 'MAT-003',
-    name: 'Epinards Surgelés',
-    category: 'Légumes Surgelés',
-    riskLevel: 'MEDIUM',
-    requiresGFSICertificate: true,
-    requiredDocuments: ['IFS/BRC'],
-    allergens: [],
-    crossContaminationRisk: [],
-    fraudVulnerability: 'LOW',
-    fraudRisks: [],
-    approvedSuppliers: ['SUP-004']
   },
   {
     id: 'MAT-004',
-    name: 'Curry Powder',
+    name: 'Curry Powder Special',
     category: 'Epices',
     riskLevel: 'HIGH',
     requiresGFSICertificate: true,
     requiredDocuments: ['Analyse Soudan rouge', 'Certificat Halal'],
-    allergens: ['Moutarde', 'Céleri (trace)'],
+    allergens: ['Moutarde'],
     crossContaminationRisk: ['Allergènes'],
     fraudVulnerability: 'HIGH',
     fraudRisks: ['Ajout colorants interdits', 'Agents de charge'],
+    foodDefenseRisk: 'MEDIUM',
+    vulnerabilityAssessment: { substitution: 8, adulteration: 9, counterfeiting: 5, overall: 7.5 },
     approvedSuppliers: ['SUP-002']
-  },
-  {
-    id: 'MAT-005',
-    name: 'Film PET 30µm',
-    category: 'Emballage',
-    riskLevel: 'LOW',
-    requiresGFSICertificate: true,
-    requiredDocuments: ['Certificat Alimentarité', 'Migration Globale'],
-    allergens: [],
-    crossContaminationRisk: [],
-    fraudVulnerability: 'LOW',
-    fraudRisks: [],
-    approvedSuppliers: ['SUP-003']
   }
 ];
 
@@ -345,6 +312,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [crisisCases, setCrisisCases] = useState<CrisisCase[]>([]);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -369,6 +337,14 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       setRawMaterials(INITIAL_RAW_MATERIALS);
       setSettings(DEFAULT_SETTINGS);
     }
+    const savedTheme = localStorage.getItem('visitrack_theme') as 'dark' | 'light';
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    } else {
+      document.documentElement.classList.add('dark');
+    }
+
     setIsLoaded(true);
   }, []);
 
@@ -743,6 +719,13 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     });
   };
 
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('visitrack_theme', newTheme);
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+  };
+
   return (
     <WorkspaceContext.Provider value={{
       suppliers, campaigns, rawMaterials, crisisCases, settings, notifications,
@@ -751,7 +734,8 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       addCampaign, updateCampaign, addNotification, markNotificationAsRead,
       clearNotifications, updateSettings, exportWorkspace, importWorkspace, bulkImportSuppliers, resetWorkspace,
       addGFSICertificate, addReceptionControl, addLaboratoryAnalysis, addRawMaterial, updateRawMaterial,
-      addCrisisCase, updateCrisisCase, addQuestionnaireToSupplier
+      addCrisisCase, updateCrisisCase, addQuestionnaireToSupplier,
+      theme, toggleTheme
     }}>
       {children}
     </WorkspaceContext.Provider>
