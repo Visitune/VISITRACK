@@ -236,7 +236,7 @@ const SupplierHub: React.FC = () => {
          {selectedSupplier && (
             <div className="fixed inset-0 z-50 flex justify-end">
                <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm" onClick={() => setSelectedSupplier(null)}></div>
-               <div className="relative w-[64rem] bg-white h-full shadow-2xl flex flex-col animate-slide-in-right overflow-hidden">
+               <div className="relative w-full max-w-5xl bg-white h-full shadow-2xl flex flex-col animate-slide-in-right overflow-hidden">
 
                   {/* Sidebar Header */}
                   <div className="p-10 border-b border-slate-100 bg-slate-50/50 flex flex-col gap-8">

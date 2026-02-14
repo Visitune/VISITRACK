@@ -445,9 +445,7 @@ export const GFSIApprovalTab: React.FC<Props> = ({ supplier }) => {
                             </div>
                         </div>
                     </div>
-                </div>
-    )
-}
+                )}
         </div >
     );
 };
