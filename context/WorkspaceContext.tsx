@@ -44,7 +44,7 @@ interface WorkspaceContextType {
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'visitrack_workspace_v8'; // Bumped version for GFSI
+const STORAGE_KEY = 'visitrack_workspace_v9'; // Bumped version for Mock Data Injection
 
 const DEFAULT_SETTINGS: Settings = {
   geminiApiKey: '',
