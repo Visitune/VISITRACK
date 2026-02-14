@@ -40,6 +40,7 @@ interface WorkspaceContextType {
   updateRawMaterial: (id: string, updates: Partial<RawMaterial>) => void;
   addCrisisCase: (crisis: CrisisCase) => void;
   updateCrisisCase: (id: string, updates: Partial<CrisisCase>) => void;
+  addQuestionnaireToSupplier: (supplierId: string, questionnaire: SupplierQuestionnaire) => void;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
@@ -725,6 +726,23 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setCrisisCases(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c));
   };
 
+  const addQuestionnaireToSupplier = (supplierId: string, questionnaire: SupplierQuestionnaire) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          questionnaires: [...(s.questionnaires || []), questionnaire]
+        };
+      }
+      return s;
+    }));
+    addNotification({
+      title: 'Questionnaire ajouté',
+      message: `Questionnaire ${questionnaire.materialCategory} enregistré pour le fournisseur.`,
+      type: 'SUCCESS'
+    });
+  };
+
   return (
     <WorkspaceContext.Provider value={{
       suppliers, campaigns, rawMaterials, crisisCases, settings, notifications,
@@ -733,7 +751,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       addCampaign, updateCampaign, addNotification, markNotificationAsRead,
       clearNotifications, updateSettings, exportWorkspace, importWorkspace, bulkImportSuppliers, resetWorkspace,
       addGFSICertificate, addReceptionControl, addLaboratoryAnalysis, addRawMaterial, updateRawMaterial,
-      addCrisisCase, updateCrisisCase
+      addCrisisCase, updateCrisisCase, addQuestionnaireToSupplier
     }}>
       {children}
     </WorkspaceContext.Provider>
