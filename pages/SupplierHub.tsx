@@ -138,13 +138,18 @@ const SupplierHub: React.FC = () => {
    );
 
    const FormField = ({ label, value, onChange, placeholder, type = "text", readOnly = !isEditMode }: any) => (
-      <div className="p-4 bg-[var(--bg-main)]/30 rounded-xl border border-[var(--border-subtle)] transition-all focus-within:ring-2 focus-within:ring-[var(--accent)]/10 focus-within:border-[var(--accent)]/30">
-         <label className="text-[9px] font-bold text-[var(--text-muted)] uppercase block mb-1">{label}</label>
+      <div className={`p-4 rounded-xl border transition-all duration-300 animate-focus-glow ${!readOnly
+         ? 'bg-[var(--bg-card)] border-[var(--accent)]/30 ring-2 ring-[var(--accent)]/5 shadow-lg shadow-indigo-500/5'
+         : 'bg-[var(--bg-main)]/30 border-[var(--border-subtle)]'
+         } focus-within:border-[var(--accent)] focus-within:ring-2 focus-within:ring-[var(--accent)]/10`}>
+         <label className={`text-[9px] font-bold uppercase block mb-1 transition-colors ${!readOnly ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}>
+            {label}
+         </label>
          <input
             type={type}
             readOnly={readOnly}
             placeholder={placeholder}
-            className={`w-full bg-transparent font-semibold text-sm outline-none ${readOnly ? 'text-[var(--text-primary)]' : 'text-[var(--accent)] cursor-text'}`}
+            className={`w-full bg-transparent font-semibold text-sm outline-none transition-colors ${readOnly ? 'text-[var(--text-primary)]' : 'text-[var(--text-primary)] cursor-text'}`}
             value={value || ''}
             onChange={e => onChange(e.target.value)}
          />
@@ -278,34 +283,29 @@ const SupplierHub: React.FC = () => {
          {selectedSupplier && (
             <div className="fixed inset-0 z-50 flex justify-end animate-fade-in">
                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedSupplier(null)}></div>
-               <div className="relative w-full max-w-4xl bg-[var(--bg-card)] h-full border-l border-[var(--border-subtle)] shadow-[0_0_50px_rgba(0,0,0,0.3)] flex flex-col animate-slide-right">
+               <div className="relative w-full max-w-6xl bg-[var(--bg-card)] h-full border-l border-[var(--border-subtle)] shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col animate-slide-right overflow-hidden">
 
-                  {/* Sidebar Header */}
-                  <div className="p-8 border-b border-[var(--border-subtle)] bg-[var(--bg-main)]/30">
+                  <div className="p-8 pb-4 border-b border-[var(--border-subtle)] bg-[var(--bg-main)]/30">
                      <div className="flex justify-between items-start mb-6">
                         <div className="flex items-center gap-6">
-                           <div className="w-16 h-16 bg-[var(--accent)] text-white rounded-2xl flex items-center justify-center text-2xl font-bold shadow-lg shadow-indigo-500/20">
-                              {selectedSupplier.name.charAt(0)}
+                           <div className="relative">
+                              <div className="w-16 h-16 bg-[var(--accent)] text-white rounded-2xl flex items-center justify-center text-2xl font-bold shadow-lg shadow-indigo-500/20">
+                                 {selectedSupplier.name.charAt(0)}
+                              </div>
+                              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-[var(--success)] border-4 border-[var(--bg-card)] rounded-full shadow-sm"></div>
                            </div>
                            <div>
                               <h2 className="text-2xl font-bold tracking-tight mb-2">{selectedSupplier.name}</h2>
                               <div className="flex items-center gap-3">
                                  <ComplianceBadge status={selectedSupplier.complianceStatus} size="sm" />
                                  <div className="w-px h-3 bg-[var(--border-subtle)]" />
-                                 <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{selectedSupplier.country}</span>
+                                 <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest flex items-center gap-1.5">
+                                    <Globe className="w-3 h-3" /> {selectedSupplier.country}
+                                 </span>
                               </div>
                            </div>
                         </div>
                         <div className="flex gap-2">
-                           <button
-                              onClick={() => setIsEditMode(!isEditMode)}
-                              className={`p-2.5 rounded-xl border transition-all ${isEditMode
-                                 ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20'
-                                 : 'border-[var(--border-subtle)] hover:bg-[var(--bg-main)] text-[var(--text-secondary)]'
-                                 }`}
-                           >
-                              {isEditMode ? <Save className="w-5 h-5" /> : <Edit3 className="w-5 h-5" />}
-                           </button>
                            <button
                               onClick={() => setSelectedSupplier(null)}
                               className="p-2.5 rounded-xl border border-[var(--border-subtle)] hover:bg-[var(--bg-main)] text-[var(--text-secondary)] transition-all"
@@ -322,18 +322,21 @@ const SupplierHub: React.FC = () => {
                            { id: 'INDUSTRIAL', label: 'Industriel', icon: Landmark },
                            { id: 'GFSI', label: 'GFSI', icon: ShieldCheck },
                            { id: 'GED', label: 'GED', icon: UploadCloud },
-                           { id: 'PDM', label: 'Produits', icon: Landmark }, // Reuse icon for now
+                           { id: 'PDM', label: 'Produits', icon: Landmark },
                            { id: 'JOURNAL', label: 'Journal', icon: MoreHorizontal }
                         ].map(t => (
                            <button
                               key={t.id}
                               onClick={() => setActiveTab(t.id as any)}
-                              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all whitespace-nowrap ${activeTab === t.id
+                              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all relative whitespace-nowrap ${activeTab === t.id
                                  ? 'bg-[var(--bg-card)] text-[var(--accent)] shadow-sm'
-                                 : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                                 : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-main)]/50'
                                  }`}
                            >
                               <t.icon className="w-3.5 h-3.5" /> {t.label}
+                              {activeTab === t.id && (
+                                 <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--accent)] rounded-full"></span>
+                              )}
                            </button>
                         ))}
                      </div>
@@ -344,17 +347,35 @@ const SupplierHub: React.FC = () => {
                      {/* TAB: IDENTITY */}
                      {activeTab === 'IDENTITY' && (
                         <div className="space-y-8 animate-fade-in">
-                           <section className="space-y-4">
-                              <h3 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest flex items-center gap-2">
-                                 <Building2 className="w-4 h-4" /> Structure Légale
-                              </h3>
-                              <div className="grid grid-cols-2 gap-4">
-                                 <FormField label="Dénomination" value={selectedSupplier.name} onChange={(v: string) => updateSupplier(selectedSupplier.id, { name: v })} />
-                                 <FormField label="SIRET" value={selectedSupplier.siret} onChange={(v: string) => updateSupplier(selectedSupplier.id, { siret: v })} />
-                                 <FormField label="Site Web" value={selectedSupplier.website} placeholder="https://..." onChange={(v: string) => updateSupplier(selectedSupplier.id, { website: v })} />
-                                 <FormField label="Email Central" value={selectedSupplier.contactEmail} onChange={(v: string) => updateSupplier(selectedSupplier.id, { contactEmail: v })} />
-                              </div>
-                           </section>
+                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                              <FormField label="Nom Commercial" value={selectedSupplier.name} readOnly={true} />
+                              <FormField label="Email Principal" value={selectedSupplier.contactEmail} onChange={(v: string) => updateSupplier(selectedSupplier.id, { contactEmail: v })} />
+                              <FormField label="Téléphone" placeholder="+33..." onChange={(v: string) => { }} />
+                              <FormField label="Site Web" value={selectedSupplier.website} placeholder="www.example.com" onChange={(v: string) => updateSupplier(selectedSupplier.id, { website: v })} />
+                              <FormField label="Code Fournisseur" value={selectedSupplier.code} placeholder="S00001" onChange={(v: string) => updateSupplier(selectedSupplier.id, { code: v })} />
+                              <FormField label="Classification" value={selectedSupplier.classification} placeholder="Direct / Indirect" onChange={(v: string) => updateSupplier(selectedSupplier.id, { classification: v })} />
+                           </div>
+
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                              <section className="space-y-4">
+                                 <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest pl-1">Siège Social</h3>
+                                 <div className="space-y-4 p-6 bg-[var(--bg-main)]/20 border border-[var(--border-subtle)] rounded-2xl">
+                                    <FormField label="Adresse" value={selectedSupplier.address} placeholder="123 Rue du Commerce" onChange={(v: string) => updateSupplier(selectedSupplier.id, { address: v })} />
+                                    <div className="grid grid-cols-2 gap-4">
+                                       <FormField label="Ville" value={selectedSupplier.city} placeholder="Paris" onChange={(v: string) => updateSupplier(selectedSupplier.id, { city: v })} />
+                                       <FormField label="Code Postal" value={selectedSupplier.zipCode} placeholder="75000" onChange={(v: string) => updateSupplier(selectedSupplier.id, { zipCode: v })} />
+                                    </div>
+                                 </div>
+                              </section>
+
+                              <section className="space-y-4">
+                                 <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest pl-1">Informations Administratives</h3>
+                                 <div className="space-y-4 p-6 bg-[var(--bg-main)]/20 border border-[var(--border-subtle)] rounded-2xl">
+                                    <FormField label="SIRET / VAT" placeholder="FR..." />
+                                    <FormField label="IBAN" placeholder="FR76..." />
+                                 </div>
+                              </section>
+                           </div>
 
                            <section className="space-y-4">
                               <h3 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest flex items-center gap-2">
@@ -362,15 +383,32 @@ const SupplierHub: React.FC = () => {
                               </h3>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                  {selectedSupplier.contacts?.map(c => (
-                                    <div key={c.id} className="p-4 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl shadow-sm">
-                                       <p className="font-bold text-sm">{c.name}</p>
-                                       <p className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-wider mb-2">{c.role}</p>
-                                       <p className="text-[10px] text-[var(--text-muted)] font-medium truncate">{c.email}</p>
+                                    <div key={c.id} className="p-5 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl shadow-sm hover:border-[var(--accent)] transition-all group relative overflow-hidden">
+                                       <div className="flex items-center gap-4 relative z-10">
+                                          <div className="w-10 h-10 bg-[var(--bg-main)] rounded-full flex items-center justify-center font-bold text-[var(--accent)] border border-[var(--border-subtle)]">
+                                             {c.name.charAt(0)}
+                                          </div>
+                                          <div className="flex-1 min-w-0">
+                                             <p className="font-bold text-sm truncate">{c.name}</p>
+                                             <p className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-wider">{c.role}</p>
+                                          </div>
+                                       </div>
+                                       <div className="mt-4 flex flex-col gap-1.5 relative z-10">
+                                          <div className="flex items-center gap-2 text-[10px] text-[var(--text-secondary)]">
+                                             <div className="w-1 h-1 rounded-full bg-[var(--accent)]"></div>
+                                             {c.email}
+                                          </div>
+                                       </div>
+                                       <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <Edit3 className="w-3.5 h-3.5 text-[var(--text-muted)] cursor-pointer hover:text-[var(--accent)]" />
+                                       </div>
                                     </div>
                                  ))}
-                                 <button className="h-full min-h-[80px] border-2 border-dashed border-[var(--border-subtle)] rounded-xl flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all">
-                                    <UserPlus className="w-5 h-5 mb-1" />
-                                    <span className="text-[9px] font-bold uppercase">Nouveau Contact</span>
+                                 <button className="h-full min-h-[100px] border-2 border-dashed border-[var(--border-subtle)] rounded-2xl flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all group">
+                                    <div className="w-10 h-10 rounded-full border-2 border-dashed border-[var(--border-subtle)] flex items-center justify-center mb-2 group-hover:border-[var(--accent)] group-hover:scale-110 transition-all">
+                                       <Plus className="w-5 h-5" />
+                                    </div>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest">Ajouter un Contact</span>
                                  </button>
                               </div>
                            </section>
@@ -380,23 +418,36 @@ const SupplierHub: React.FC = () => {
                      {/* TAB: INDUSTRIAL */}
                      {activeTab === 'INDUSTRIAL' && (
                         <div className="space-y-8 animate-fade-in">
-                           <section className="space-y-4">
-                              <h3 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest flex items-center gap-2">
-                                 <Landmark className="w-4 h-4" /> Fiscalité & Localisation
-                              </h3>
-                              <div className="grid grid-cols-2 gap-4">
-                                 <FormField label="TVA Intracom." value={selectedSupplier.industrialInfo?.vatNumber} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, vatNumber: v } })} />
-                                 <FormField label="DUNS Number" value={selectedSupplier.industrialInfo?.dunsNumber} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, dunsNumber: v } })} />
-                                 <FormField label="Ville" value={selectedSupplier.industrialInfo?.city} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, city: v } })} />
-                                 <FormField label="Chiffre d'Affaire" value={selectedSupplier.industrialInfo?.annualRevenue} placeholder="Ex: 5M€" onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, annualRevenue: v } })} />
-                              </div>
-                           </section>
-                           <section className="space-y-4">
-                              <h3 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest flex items-center gap-2">
-                                 <Truck className="w-4 h-4" /> Logistique
-                              </h3>
-                              <FormField label="Adresse du Site" value={selectedSupplier.industrialInfo?.address} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, address: v } })} />
-                           </section>
+                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                              <FormField label="TVA Intracom." value={selectedSupplier.industrialInfo?.vatNumber} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, vatNumber: v } })} />
+                              <FormField label="DUNS Number" value={selectedSupplier.industrialInfo?.dunsNumber} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, dunsNumber: v } })} />
+                              <FormField label="Chiffre d'Affaire" value={selectedSupplier.industrialInfo?.annualRevenue} placeholder="Ex: 5M€" onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, annualRevenue: v } })} />
+                           </div>
+
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                              <section className="space-y-4">
+                                 <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest pl-1">Capacité & Logistique</h3>
+                                 <div className="space-y-4 p-6 bg-[var(--bg-main)]/20 border border-[var(--border-subtle)] rounded-2xl">
+                                    <FormField label="Adresse du Site" value={selectedSupplier.industrialInfo?.address} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, address: v } })} />
+                                    <FormField label="Ville de Production" value={selectedSupplier.industrialInfo?.city} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, city: v } })} />
+                                 </div>
+                              </section>
+
+                              <section className="space-y-4">
+                                 <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest pl-1">Évaluation Industrielle</h3>
+                                 <div className="space-y-4 p-6 bg-[var(--bg-main)]/20 border border-[var(--border-subtle)] rounded-2xl">
+                                    <div className="bg-[var(--bg-card)] p-4 rounded-xl border border-[var(--border-subtle)]">
+                                       <p className="text-[9px] font-bold text-[var(--text-muted)] uppercase mb-2">Score de Risque Industriel</p>
+                                       <div className="flex items-center gap-4">
+                                          <div className="flex-1 h-2 bg-[var(--bg-main)] rounded-full overflow-hidden">
+                                             <div className="h-full bg-amber-500 w-[65%]" />
+                                          </div>
+                                          <span className="text-sm font-black">65%</span>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </section>
+                           </div>
                         </div>
                      )}
 
@@ -446,38 +497,104 @@ const SupplierHub: React.FC = () => {
 
                      {/* TAB: JOURNAL */}
                      {activeTab === 'JOURNAL' && (
-                        <div className="space-y-6 animate-fade-in">
-                           <div className="bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl p-4">
+                        <div className="space-y-8 animate-fade-in pb-10">
+                           <div className="bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl p-6 shadow-sm focus-within:ring-2 focus-within:ring-[var(--accent)]/10 transition-all">
+                              <div className="flex items-center gap-3 mb-4">
+                                 <div className="w-8 h-8 rounded-full bg-[var(--accent)]/10 flex items-center justify-center text-[var(--accent)]">
+                                    <Edit3 className="w-4 h-4" />
+                                 </div>
+                                 <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-primary)]">Nouvelle Note d'Audit</h4>
+                              </div>
                               <textarea
-                                 placeholder="Notez ici les remarques d'audit ou les échanges..."
-                                 className="w-full h-24 bg-transparent text-sm resize-none outline-none"
+                                 placeholder="Décrivez ici les discussions, points d'attention ou conclusions d'audit..."
+                                 className="w-full h-32 bg-[var(--bg-main)]/30 rounded-xl p-4 text-sm resize-none outline-none border border-transparent focus:border-[var(--accent)]/30 transition-all"
                                  value={newCommentText}
                                  onChange={(e) => setNewCommentText(e.target.value)}
                               />
-                              <div className="flex justify-end mt-2">
+                              <div className="flex justify-between items-center mt-4">
+                                 <div className="flex gap-2">
+                                    {['GENERAL', 'QUALITY', 'LOGISTICS'].map(cat => (
+                                       <button
+                                          key={cat}
+                                          onClick={() => setCommentCategory(cat as any)}
+                                          className={`px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest transition-all ${commentCategory === cat ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-main)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
+                                       >
+                                          {cat}
+                                       </button>
+                                    ))}
+                                 </div>
                                  <button
                                     onClick={handleAddComment}
                                     disabled={!newCommentText}
-                                    className="px-4 py-2 bg-[var(--accent)] text-white text-[10px] font-bold uppercase tracking-widest rounded-lg disabled:opacity-50"
+                                    className="px-8 py-2.5 bg-[var(--accent)] text-white text-[10px] font-bold uppercase tracking-wider rounded-xl disabled:opacity-50 shadow-lg shadow-indigo-500/20 active:scale-95 transition-all"
                                  >
-                                    Publier
+                                    Diffuser la Note
                                  </button>
                               </div>
                            </div>
-                           <div className="space-y-4">
-                              {selectedSupplier.commentaries?.map(c => (
-                                 <div key={c.id} className="p-4 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl shadow-sm">
-                                    <div className="flex justify-between items-center mb-2">
-                                       <span className="text-[10px] font-bold text-[var(--accent)] uppercase">{c.category}</span>
-                                       <span className="text-[9px] text-[var(--text-muted)] font-bold">{new Date(c.timestamp).toLocaleDateString()}</span>
+
+                           <div className="relative pl-8 space-y-8 before:absolute before:left-[15px] before:top-2 before:bottom-2 before:w-0.5 before:bg-[var(--border-subtle)]">
+                              {selectedSupplier.commentaries?.length === 0 ? (
+                                 <div className="text-center py-10 text-[var(--text-muted)] text-[11px] italic">Aucune note historique pour le moment.</div>
+                              ) : (
+                                 selectedSupplier.commentaries?.sort((a, b) => b.timestamp - a.timestamp).map((c, idx) => (
+                                    <div key={c.id} className="relative group">
+                                       <div className={`absolute -left-[31px] top-1 w-4 h-4 rounded-full border-4 border-[var(--bg-card)] shadow-sm z-10 transition-all group-hover:scale-125 ${idx === 0 ? 'bg-[var(--accent)] animate-pulse' : 'bg-[var(--text-muted)]'}`}></div>
+                                       <div className="bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+                                          <div className="flex justify-between items-start mb-4">
+                                             <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-lg bg-[var(--bg-main)] flex items-center justify-center font-bold text-[var(--accent)] text-xs">
+                                                   {c.author.charAt(0)}
+                                                </div>
+                                                <div>
+                                                   <p className="text-xs font-bold">{c.author}</p>
+                                                   <p className="text-[10px] text-[var(--text-muted)] font-medium">{new Date(c.timestamp).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                                                </div>
+                                             </div>
+                                             <span className={`px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${c.category === 'QUALITY' ? 'bg-amber-500/10 text-amber-500' :
+                                                c.category === 'LOGISTICS' ? 'bg-indigo-500/10 text-indigo-500' :
+                                                   'bg-slate-500/10 text-slate-500'
+                                                }`}>
+                                                {c.category}
+                                             </span>
+                                          </div>
+                                          <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{c.text}</p>
+                                       </div>
                                     </div>
-                                    <p className="text-sm font-medium">{c.text}</p>
-                                    <p className="text-[10px] text-[var(--text-muted)] mt-2 font-bold">— {c.author}</p>
-                                 </div>
-                              ))}
+                                 ))
+                              )}
                            </div>
                         </div>
                      )}
+                  </div>
+
+                  {/* Sticky Premium Actions Footer */}
+                  <div className="p-6 bg-[var(--bg-card)]/80 backdrop-blur-xl border-t border-[var(--border-subtle)] flex justify-between items-center px-10 shrink-0">
+                     <div className="flex items-center gap-6">
+                        <button className="flex items-center gap-2 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] uppercase tracking-widest transition-all group">
+                           <FileDown className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" /> Dossier Complet
+                        </button>
+                        <button className="flex items-center gap-2 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] uppercase tracking-widest transition-all group">
+                           <Globe className="w-4 h-4 group-hover:rotate-12 transition-transform" /> Site Fournisseur
+                        </button>
+                     </div>
+                     <div className="flex items-center gap-3">
+                        <button
+                           onClick={() => { setIsEditMode(false); }}
+                           className={`px-6 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all hover:bg-rose-500/5 ${isEditMode ? 'bg-rose-500/10 text-rose-500' : 'hidden'}`}
+                        >
+                           Annuler
+                        </button>
+                        <button
+                           onClick={() => setIsEditMode(!isEditMode)}
+                           className={`flex items-center gap-2 px-10 py-3.5 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all shadow-lg active:scale-95 ${isEditMode
+                              ? 'bg-emerald-500 text-white shadow-emerald-500/20 hover:bg-emerald-600'
+                              : 'bg-[var(--accent)] text-white shadow-indigo-500/20 hover:opacity-90'
+                              }`}
+                        >
+                           {isEditMode ? <><Save className="w-4 h-4" /> Enregistrer les modifications</> : <><Edit3 className="w-4 h-4" /> Modifier les informations</>}
+                        </button>
+                     </div>
                   </div>
                </div>
             </div>
