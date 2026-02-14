@@ -60,3 +60,48 @@ export const analyzeDocumentCompliance = async (documentText: string, documentTy
     throw error;
   }
 };
+
+/**
+ * Generic document analysis using a dynamic prompt (inspired by PDFANALYZE)
+ */
+export const analyzeDocumentWithTemplate = async (
+  base64Content: string,
+  prompt: string,
+  apiKey: string
+): Promise<any> => {
+  if (!apiKey) {
+    throw new Error("Clé API Gemini manquante.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
+  const modelId = "gemini-1.5-pro"; // Use Pro for better analysis of long documents
+
+  // Remove data:application/pdf;base64, prefix if present
+  const base64Data = base64Content.includes(",") ? base64Content.split(",")[1] : base64Content;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: modelId,
+      contents: [
+        {
+          inlineData: {
+            data: base64Data,
+            mimeType: "application/pdf"
+          }
+        },
+        prompt
+      ],
+      config: {
+        responseMimeType: "application/json"
+      }
+    });
+
+    const text = response.text || "{}";
+    // Clean potential markdown code blocks
+    const cleanJson = text.replace(/```json\n?/, "").replace(/```/, "").trim();
+    return JSON.parse(cleanJson);
+  } catch (error) {
+    console.error("Gemini Template Analysis Failed", error);
+    throw error;
+  }
+};

@@ -1,9 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Supplier, ComplianceStatus, WorkspaceState, Settings, AppNotification, NonConformity, Product, Campaign, Comment, ContactPerson, Attachment } from '../types';
+import {
+  Supplier, ComplianceStatus, WorkspaceState, Settings, AppNotification,
+  NonConformity, Product, Campaign, Comment, ContactPerson, Attachment,
+  RawMaterial, CrisisCase, GFSICertificate, ReceptionControl, LaboratoryAnalysis,
+  AnnualReview, SupplierQuestionnaire
+} from '../types';
 
 interface WorkspaceContextType {
   suppliers: Supplier[];
   campaigns: Campaign[];
+  rawMaterials: RawMaterial[];
+  crisisCases: CrisisCase[];
   settings: Settings;
   notifications: AppNotification[];
   addSupplier: (supplier: Supplier) => void;
@@ -24,11 +31,20 @@ interface WorkspaceContextType {
   importWorkspace: (file: File) => Promise<void>;
   bulkImportSuppliers: (suppliers: Supplier[]) => void;
   resetWorkspace: () => void;
+
+  // GFSI Functions
+  addGFSICertificate: (supplierId: string, certificate: GFSICertificate) => void;
+  addReceptionControl: (supplierId: string, control: ReceptionControl) => void;
+  addLaboratoryAnalysis: (supplierId: string, analysis: LaboratoryAnalysis) => void;
+  addRawMaterial: (material: RawMaterial) => void;
+  updateRawMaterial: (id: string, updates: Partial<RawMaterial>) => void;
+  addCrisisCase: (crisis: CrisisCase) => void;
+  updateCrisisCase: (id: string, updates: Partial<CrisisCase>) => void;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'visitrack_workspace_v7';
+const STORAGE_KEY = 'visitrack_workspace_v8'; // Bumped version for GFSI
 
 const DEFAULT_SETTINGS: Settings = {
   geminiApiKey: '',
@@ -87,20 +103,66 @@ const INITIAL_DATA: Supplier[] = [
           }
         ]
       }
-    ]
+    ],
+    approvalStatus: 'APPROVED',
+    gfsiCertificates: [
+      {
+        id: 'CERT-001',
+        type: 'IFS',
+        version: 'Food v8',
+        score: 98.4,
+        grade: 'Higher Level',
+        validFrom: '2023-01-15',
+        validUntil: '2024-03-15',
+        scope: 'Transformation de fruits et légumes frais, conditionnement sous atmosphère protectrice.',
+        certificationBody: 'Bureau Veritas',
+        majorNonConformities: 0,
+        minorNonConformities: 2
+      }
+    ],
+    receptionControls: []
+  }
+];
+
+const INITIAL_RAW_MATERIALS: RawMaterial[] = [
+  {
+    id: 'MAT-001',
+    name: 'Tomate Cerise Rouge',
+    category: 'Légumes',
+    riskLevel: 'LOW',
+    requiresGFSICertificate: true,
+    requiredDocuments: ['Certificat Bio', 'Bulletin Analyse'],
+    allergens: [],
+    crossContaminationRisk: [],
+    fraudVulnerability: 'LOW',
+    fraudRisks: [],
+    approvedSuppliers: ['SUP-001']
+  },
+  {
+    id: 'MAT-002',
+    name: 'Basilic Frais',
+    category: 'Herbes',
+    riskLevel: 'MEDIUM',
+    requiresGFSICertificate: true,
+    requiredDocuments: ['GlobalGAP'],
+    allergens: [],
+    crossContaminationRisk: [],
+    fraudVulnerability: 'MEDIUM',
+    fraudRisks: ['Pesticides non autorisés'],
+    approvedSuppliers: ['SUP-001']
   }
 ];
 
 // Helper for visual compression of data in localStorage
 const compressData = (data: any) => {
-  // In a real browser environment, we could use LZ-based compression
-  // Here we ensure the JSON is compact and we could implement a basic string optimization if needed
   return JSON.stringify(data);
 };
 
 export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>([]);
+  const [crisisCases, setCrisisCases] = useState<CrisisCase[]>([]);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -112,15 +174,19 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         const parsed: WorkspaceState = JSON.parse(saved);
         setSuppliers(parsed.suppliers || INITIAL_DATA);
         setCampaigns(parsed.campaigns || []);
+        setRawMaterials(parsed.rawMaterials || INITIAL_RAW_MATERIALS);
+        setCrisisCases(parsed.crisisCases || []);
         setSettings(parsed.settings || DEFAULT_SETTINGS);
         setNotifications(parsed.notifications || []);
       } catch (e) {
         console.error("Failed to load workspace", e);
         setSuppliers(INITIAL_DATA);
+        setRawMaterials(INITIAL_RAW_MATERIALS);
         setSettings(DEFAULT_SETTINGS);
       }
     } else {
       setSuppliers(INITIAL_DATA);
+      setRawMaterials(INITIAL_RAW_MATERIALS);
       setSettings(DEFAULT_SETTINGS);
     }
     setIsLoaded(true);
@@ -131,10 +197,12 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       const state: WorkspaceState = {
         suppliers,
         campaigns,
+        rawMaterials,
+        crisisCases,
         settings,
         notifications,
         lastModified: Date.now(),
-        version: '7.0'
+        version: '8.0'
       };
 
       try {
@@ -149,10 +217,9 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         }
       }
     }
-  }, [suppliers, campaigns, settings, notifications, isLoaded]);
+  }, [suppliers, campaigns, rawMaterials, crisisCases, settings, notifications, isLoaded]);
 
   const addSupplier = (supplier: Supplier) => {
-    // Structural integrity check for new dossier creation
     const safeSupplier: Supplier = {
       ...supplier,
       documents: supplier.documents || [],
@@ -161,7 +228,12 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       contacts: supplier.contacts || [],
       attachments: supplier.attachments || [],
       nonConformities: supplier.nonConformities || [],
-      industrialInfo: supplier.industrialInfo || {}
+      industrialInfo: supplier.industrialInfo || {},
+      gfsiCertificates: supplier.gfsiCertificates || [],
+      receptionControls: supplier.receptionControls || [],
+      laboratoryAnalyses: supplier.laboratoryAnalyses || [],
+      annualReviews: supplier.annualReviews || [],
+      questionnaires: supplier.questionnaires || []
     };
     setSuppliers(prev => [safeSupplier, ...prev]);
     addNotification({
@@ -290,12 +362,15 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   const exportWorkspace = () => {
-    const state: WorkspaceState = { suppliers, campaigns, settings, notifications, lastModified: Date.now(), version: '7.0' };
+    const state: WorkspaceState = {
+      suppliers, campaigns, rawMaterials, crisisCases,
+      settings, notifications, lastModified: Date.now(), version: '8.0'
+    };
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `visitrack-enterprise-v7-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `visitrack-enterprise-v8-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
   };
 
@@ -305,6 +380,8 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       const parsed: WorkspaceState = JSON.parse(text);
       if (Array.isArray(parsed.suppliers)) setSuppliers(parsed.suppliers);
       if (Array.isArray(parsed.campaigns)) setCampaigns(parsed.campaigns);
+      if (Array.isArray(parsed.rawMaterials)) setRawMaterials(parsed.rawMaterials);
+      if (Array.isArray(parsed.crisisCases)) setCrisisCases(parsed.crisisCases);
       if (parsed.settings) setSettings(parsed.settings);
       if (Array.isArray(parsed.notifications)) setNotifications(parsed.notifications);
       addNotification({ title: 'Restauration réussie', message: 'Toutes les données ERP ont été chargées.', type: 'SUCCESS' });
@@ -326,7 +403,12 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           contacts: s.contacts || [],
           attachments: s.attachments || [],
           nonConformities: s.nonConformities || [],
-          industrialInfo: s.industrialInfo || {}
+          industrialInfo: s.industrialInfo || {},
+          gfsiCertificates: s.gfsiCertificates || [],
+          receptionControls: s.receptionControls || [],
+          laboratoryAnalyses: s.laboratoryAnalyses || [],
+          annualReviews: s.annualReviews || [],
+          questionnaires: s.questionnaires || []
         }));
       return [...filtered, ...prev];
     });
@@ -344,13 +426,89 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   };
 
+  // --- GFSI Functions Implementation ---
+
+  const addGFSICertificate = (supplierId: string, certificate: GFSICertificate) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          gfsiCertificates: [...(s.gfsiCertificates || []), certificate]
+        };
+      }
+      return s;
+    }));
+    addNotification({
+      title: 'Certificat GFSI ajouté',
+      message: `Certificat ${certificate.type} enregistré pour le fournisseur.`,
+      type: 'SUCCESS'
+    });
+  };
+
+  const addReceptionControl = (supplierId: string, control: ReceptionControl) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          receptionControls: [control, ...(s.receptionControls || [])]
+        };
+      }
+      return s;
+    }));
+    addNotification({
+      title: 'Contrôle Réception',
+      message: `Réception de lot ${control.lotNumber} enregistrée. Décision: ${control.decision}`,
+      type: control.decision === 'REJECTED' ? 'ERROR' : 'SUCCESS'
+    });
+  };
+
+  const addLaboratoryAnalysis = (supplierId: string, analysis: LaboratoryAnalysis) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          laboratoryAnalyses: [analysis, ...(s.laboratoryAnalyses || [])]
+        };
+      }
+      return s;
+    }));
+    addNotification({
+      title: 'Analyse Laboratoire',
+      message: `Résultats d'analyse intégrés pour le lot ${analysis.lotNumber}.`,
+      type: analysis.overallResult === 'NON_CONFORM' ? 'ERROR' : 'SUCCESS'
+    });
+  };
+
+  const addRawMaterial = (material: RawMaterial) => {
+    setRawMaterials(prev => [material, ...prev]);
+  };
+
+  const updateRawMaterial = (id: string, updates: Partial<RawMaterial>) => {
+    setRawMaterials(prev => prev.map(m => m.id === id ? { ...m, ...updates } : m));
+  };
+
+  const addCrisisCase = (crisis: CrisisCase) => {
+    setCrisisCases(prev => [crisis, ...prev]);
+    addNotification({
+      title: '🚨 Alerte Crise',
+      message: `Nouveau dossier de crise ouvert: ${crisis.danger} (${crisis.product})`,
+      type: 'ERROR'
+    });
+  };
+
+  const updateCrisisCase = (id: string, updates: Partial<CrisisCase>) => {
+    setCrisisCases(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c));
+  };
+
   return (
     <WorkspaceContext.Provider value={{
-      suppliers, campaigns, settings, notifications,
+      suppliers, campaigns, rawMaterials, crisisCases, settings, notifications,
       addSupplier, updateSupplier, addDocumentToSupplier, addCommentToSupplier, addAttachmentToSupplier,
       linkSecondarySupplier, addNonConformity, updateNonConformity,
       addCampaign, updateCampaign, addNotification, markNotificationAsRead,
-      clearNotifications, updateSettings, exportWorkspace, importWorkspace, bulkImportSuppliers, resetWorkspace
+      clearNotifications, updateSettings, exportWorkspace, importWorkspace, bulkImportSuppliers, resetWorkspace,
+      addGFSICertificate, addReceptionControl, addLaboratoryAnalysis, addRawMaterial, updateRawMaterial,
+      addCrisisCase, updateCrisisCase
     }}>
       {children}
     </WorkspaceContext.Provider>

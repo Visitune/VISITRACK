@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Supplier, ComplianceStatus, OnboardingStep, NonConformity, Product, Document, ProductVersion, Comment, ContactPerson, Attachment } from '../types';
 import { useWorkspace } from '../context/WorkspaceContext';
 import ComplianceBadge from '../components/ComplianceBadge';
+import { GFSIApprovalTab } from '../components/GFSIApprovalTab';
 import {
    Search, MapPin, FileText, Box, Plus, X, Globe, Building2,
    Mail, ShieldCheck, List, Clock, AlertTriangle, CheckCircle2,
@@ -21,7 +22,7 @@ const SupplierHub: React.FC = () => {
    const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
    const [isEditMode, setIsEditMode] = useState(false);
    const [activeFilter, setActiveFilter] = useState<'ALL' | 'HIGH_RISK' | 'NON_COMPLIANT'>('ALL');
-   const [activeTab, setActiveTab] = useState<'IDENTITY' | 'INDUSTRIAL' | 'GED' | 'PDM' | 'JOURNAL'>('IDENTITY');
+   const [activeTab, setActiveTab] = useState<'IDENTITY' | 'INDUSTRIAL' | 'GFSI' | 'GED' | 'PDM' | 'JOURNAL'>('IDENTITY');
 
    // Commentary State
    const [newCommentText, setNewCommentText] = useState('');
@@ -289,10 +290,11 @@ const SupplierHub: React.FC = () => {
                      </div>
 
                      {/* Tab Navigation */}
-                     <div className="flex gap-1 p-1 bg-slate-100 rounded-2xl self-start">
+                     <div className="flex gap-1 p-1 bg-slate-100 rounded-2xl self-start overflow-x-auto no-scrollbar">
                         {[
                            { id: 'IDENTITY', label: 'Identité', icon: Building2 },
                            { id: 'INDUSTRIAL', label: 'Données Industrielles', icon: Landmark },
+                           { id: 'GFSI', label: 'Approbation GFSI', icon: Shield },
                            { id: 'GED', label: 'GED & OneDrive', icon: FileUp },
                            { id: 'PDM', label: 'Catalogue PDM', icon: Box },
                            { id: 'JOURNAL', label: 'Journal & CRM', icon: MessageSquare },
@@ -300,7 +302,7 @@ const SupplierHub: React.FC = () => {
                            <button
                               key={tab.id}
                               onClick={() => setActiveTab(tab.id as any)}
-                              className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-white shadow-xl text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}
+                              className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === tab.id ? 'bg-white shadow-xl text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}
                            >
                               <tab.icon className="w-4 h-4" /> {tab.label}
                            </button>
@@ -393,6 +395,11 @@ const SupplierHub: React.FC = () => {
                               </div>
                            </section>
                         </div>
+                     )}
+
+                     {/* TAB: GFSI */}
+                     {activeTab === 'GFSI' && selectedSupplier && (
+                        <GFSIApprovalTab supplier={selectedSupplier} />
                      )}
 
                      {/* TAB: GED */}

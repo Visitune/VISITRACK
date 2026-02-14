@@ -38,6 +38,142 @@ export interface Document {
   attachmentId?: string;
 }
 
+// --- GFSI Extension Types ---
+
+export type GFSIApprovalStatus = 'NEW' | 'PENDING_DOCS' | 'UNDER_REVIEW' | 'APPROVED' | 'APPROVED_CONDITIONAL' | 'REJECTED';
+
+export interface GFSICertificate {
+  id: string;
+  type: 'IFS' | 'BRCGS' | 'FSSC22000' | 'ISO22000' | 'OTHER';
+  version: string;
+  score?: number;
+  grade?: string;
+  validFrom: string;
+  validUntil: string;
+  scope: string;
+  certificationBody: string;
+  majorNonConformities: number;
+  minorNonConformities: number;
+  attachmentId?: string;
+  extractedData?: Record<string, any>;
+}
+
+export interface AnalysisParameter {
+  name: string;
+  result: string;
+  limit: string;
+  unit?: string;
+  conform: boolean;
+}
+
+export interface LaboratoryAnalysis {
+  id: string;
+  date: string;
+  lotNumber: string;
+  materialId: string;
+  supplierId: string;
+  analysisType: 'MICROBIOLOGY' | 'CHEMISTRY' | 'DNA' | 'ALLERGENS' | 'CONTAMINANTS';
+  parameters: AnalysisParameter[];
+  laboratory: string;
+  status: 'PLANNED' | 'SENT' | 'RESULTS_RECEIVED' | 'VALIDATED';
+  overallResult: 'CONFORM' | 'NON_CONFORM';
+  attachmentId?: string;
+  extractedData?: Record<string, any>;
+}
+
+export interface ReceptionControl {
+  id: string;
+  date: string;
+  lotNumber: string;
+  supplierLotNumber: string;
+  materialId: string;
+  quantity: number;
+  unit: string;
+  documentaryChecks: {
+    sanitaryCertificate: boolean;
+    analysisResults: boolean;
+    traceability: boolean;
+    labeling: boolean;
+  };
+  physicalChecks: {
+    temperature?: number;
+    temperatureLimit: number;
+    visualAspect: 'CONFORM' | 'NON_CONFORM';
+    smell: 'NORMAL' | 'ABNORMAL';
+    dlc?: string;
+    packagingIntegrity: boolean;
+  };
+  decision: 'ACCEPTED' | 'ACCEPTED_CONDITIONAL' | 'REJECTED';
+  remarks?: string;
+  operator: string;
+  photoUrl?: string;
+  nonConformityId?: string;
+}
+
+export interface RawMaterial {
+  id: string;
+  name: string;
+  category: string; // e.g., 'MEAT', 'DAIRY', 'VEGETABLES', 'EPICES', 'PACKAGING'
+  riskLevel: 'HIGH' | 'MEDIUM' | 'LOW';
+  requiresGFSICertificate: boolean;
+  requiredDocuments: string[];
+  allergens: string[];
+  crossContaminationRisk: string[];
+  fraudVulnerability: 'HIGH' | 'MEDIUM' | 'LOW';
+  fraudRisks: string[];
+  approvedSuppliers: string[]; // Supplier IDs
+}
+
+export interface AnnualReview {
+  id: string;
+  year: number;
+  date: string;
+  reviewer: string;
+  scores: {
+    quality: number;
+    gfsiCompliance: number;
+    laboratoryResults: number;
+    logistics: number;
+    overall: number;
+  };
+  grade: 'A' | 'B' | 'C' | 'D';
+  decision: 'MAINTAIN' | 'REINFORCE_REQUIREMENTS' | 'IMPROVEMENT_PLAN' | 'UNDER_OBSERVATION' | 'DELIST';
+  remarks?: string;
+  reportAttachmentId?: string;
+}
+
+export interface SupplierQuestionnaire {
+  id: string;
+  materialCategory: string;
+  completedDate?: string;
+  status: 'PENDING' | 'COMPLETED' | 'VALIDATED';
+  responses: Record<string, any>;
+}
+
+export interface CrisisAction {
+  id: string;
+  type: 'BLOCKING' | 'ALERT' | 'RECALL' | 'ANALYSIS' | 'REPORT';
+  description: string;
+  status: 'PENDING' | 'DONE';
+  dueDate?: string;
+}
+
+export interface CrisisCase {
+  id: string;
+  alertType: 'RASFF' | 'INFOSAN' | 'INTERNAL' | 'CLIENT';
+  alertReference?: string;
+  product: string;
+  danger: string;
+  origin?: string;
+  createdDate: string;
+  status: 'OPEN' | 'IN_PROGRESS' | 'CLOSED';
+  affectedLots: string[];
+  affectedFinishedProducts: string[];
+  actions: CrisisAction[];
+}
+
+// --- End GFSI Extension Types ---
+
 export interface ProductVersion {
   id: string;
   timestamp: string;
@@ -107,8 +243,6 @@ export interface SupplierIndustrialInfo {
   dunsNumber?: string;
   employeeCount?: number;
   annualRevenue?: string;
-  bankIban?: string;
-  bankBic?: string;
   socialLink?: string;
   factoryCertifications?: string[]; // e.g. "ISO 22000", "FSSC 22000"
 }
@@ -139,6 +273,18 @@ export interface Supplier {
   secondarySuppliers?: string[];
   nonConformities: NonConformity[];
   esgScore?: number;
+
+  // GFSI Extensions
+  approvalStatus?: GFSIApprovalStatus;
+  approvalDate?: string;
+  approvedBy?: string;
+  nextReviewDate?: string;
+  gfsiCertificates?: GFSICertificate[];
+  questionnaires?: SupplierQuestionnaire[];
+  receptionControls?: ReceptionControl[];
+  laboratoryAnalyses?: LaboratoryAnalysis[];
+  annualReviews?: AnnualReview[];
+  rawMaterials?: string[]; // IDs of RawMaterial
 }
 
 export interface AppNotification {
@@ -179,6 +325,8 @@ export interface Settings {
 
 export interface WorkspaceState {
   suppliers: Supplier[];
+  rawMaterials?: RawMaterial[];
+  crisisCases?: CrisisCase[];
   campaigns?: Campaign[];
   settings: Settings;
   notifications: AppNotification[];
