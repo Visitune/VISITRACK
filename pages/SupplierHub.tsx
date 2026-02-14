@@ -284,9 +284,9 @@ const SupplierHub: React.FC = () => {
 
          {/* Modern Centric Command Center */}
          {selectedSupplier && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-6 animate-fade-in overflow-hidden">
-               <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md" onClick={() => setSelectedSupplier(null)}></div>
-               <div className="relative w-full max-w-7xl h-[90vh] bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-[40px] shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden animate-slide-up">
+            <div className="fixed inset-0 z-50 flex justify-center p-4 lg:p-8 animate-fade-in overflow-y-auto scrollbar-hide py-10 lg:py-20">
+               <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md" onClick={() => setSelectedSupplier(null)}></div>
+               <div className="relative w-full max-w-7xl h-fit min-h-[85vh] bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-[40px] shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden animate-slide-up">
 
                   <div className="p-8 pb-4 border-b border-[var(--border-subtle)] bg-[var(--bg-main)]/30">
                      <div className="flex justify-between items-start mb-6">
@@ -327,230 +327,282 @@ const SupplierHub: React.FC = () => {
                            { id: 'GED', label: 'GED', icon: FolderClosed },
                            { id: 'PDM', label: 'Produits', icon: LayoutGrid },
                            { id: 'JOURNAL', label: 'Journal', icon: History }
-                        ].map(t => (
-                           <button
-                              key={t.id}
-                              onClick={() => setActiveTab(t.id as any)}
-                              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all relative whitespace-nowrap ${activeTab === t.id
-                                 ? 'bg-[var(--bg-card)] text-[var(--accent)] shadow-sm'
-                                 : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-main)]/50'
-                                 }`}
-                           >
-                              <t.icon className="w-3.5 h-3.5" /> {t.label}
-                              {activeTab === t.id && (
-                                 <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--accent)] rounded-full"></span>
-                              )}
-                           </button>
                         ))}
                      </div>
+
+                     <div className="flex-1 overflow-y-auto p-4 lg:p-8 bg-[var(--bg-main)]/5 scrollbar-hide">
+                        {activeTab === 'IDENTITY' && (
+                           <div className="grid grid-cols-12 auto-rows-min gap-6 pb-10 bento-stagger">
+                              {/* Main Identity Card */}
+                              <div className="col-span-12 lg:col-span-8 row-span-3 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8 flex flex-col">
+                                 <div className="space-y-6">
+                                    <SectionHeader icon={Contact} title="Informations Générales" />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                       <FormField label="Nom Commercial" value={selectedSupplier.name} readOnly={true} />
+                                       <FormField label="Code Fournisseur" value={selectedSupplier.code} placeholder="S00001" onChange={(v: string) => updateSupplier(selectedSupplier.id, { code: v })} />
+                                       <FormField label="Email Principal" value={selectedSupplier.contactEmail} onChange={(v: string) => updateSupplier(selectedSupplier.id, { contactEmail: v })} />
+                                       <FormField label="Téléphone" placeholder="+33..." onChange={(v: string) => { }} />
+                                       <FormField label="Site Web" value={selectedSupplier.website} placeholder="www.example.com" onChange={(v: string) => updateSupplier(selectedSupplier.id, { website: v })} />
+                                       <FormField label="Classification" value={selectedSupplier.classification} placeholder="Direct / Indirect" onChange={(v: string) => updateSupplier(selectedSupplier.id, { classification: v })} />
+                                    </div>
+                                 </div>
+                                 <div className="mt-8">
+                                    <SectionHeader icon={Building2} title="Siège Social" />
+                                    <div className="space-y-4 mt-4">
+                                       <FormField label="Adresse" value={selectedSupplier.address} placeholder="123 Rue du Commerce" onChange={(v: string) => updateSupplier(selectedSupplier.id, { address: v })} />
+                                       <div className="grid grid-cols-2 gap-4">
+                                          <FormField label="Ville" value={selectedSupplier.city} placeholder="Paris" onChange={(v: string) => updateSupplier(selectedSupplier.id, { city: v })} />
+                                          <FormField label="Code Postal" value={selectedSupplier.zipCode} placeholder="75000" onChange={(v: string) => updateSupplier(selectedSupplier.id, { zipCode: v })} />
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+
+                              {/* Contacts Card */}
+                              <div className="col-span-12 lg:col-span-4 row-span-4 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8 flex flex-col min-h-[400px]">
+                                 <SectionHeader icon={Users} title="Contacts Tiers" badge={selectedSupplier.contacts?.length.toString() || '0'} />
+                                 <div className="flex-1 overflow-y-auto space-y-4 pr-2 -mr-2 scrollbar-hide">
+                                    {selectedSupplier.contacts?.map(c => (
+                                       <div key={c.id} className="p-4 bg-[var(--bg-main)]/30 border border-[var(--border-subtle)] rounded-xl shadow-sm hover:border-[var(--accent)] transition-all group relative font-medium">
+                                          <div className="flex items-center gap-3">
+                                             <div className="w-8 h-8 bg-[var(--accent)]/10 rounded-full flex items-center justify-center font-bold text-[var(--accent)] text-xs">
+                                                {c.name.charAt(0)}
+                                             </div>
+                                             <div className="flex-1 min-w-0">
+                                                <p className="font-bold text-sm truncate">{c.name}</p>
+                                                <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">{c.role}</p>
+                                             </div>
+                                          </div>
+                                          <div className="mt-3 flex items-center gap-2 text-[10px] text-[var(--text-secondary)]">
+                                             <div className="w-1 h-1 rounded-full bg-[var(--accent)]"></div>
+                                             {c.email}
+                                          </div>
+                                          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                             <Edit3 className="w-3.5 h-3.5 text-[var(--text-muted)] cursor-pointer hover:text-[var(--accent)]" />
+                                          </div>
+                                       </div>
+                                    ))}
+                                    <button
+                                       onClick={() => addNotification({ title: 'Nouveau Contact', message: 'Ouverture du formulaire de création...', type: 'SUCCESS' })}
+                                       className="w-full h-24 border-2 border-dashed border-[var(--border-subtle)] rounded-xl flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all group"
+                                    >
+                                       <Plus className="w-5 h-5 mb-1" />
+                                       <span className="text-[10px] font-bold uppercase tracking-widest">Ajouter un Contact</span>
+                                    </button>
+                                 </div>
+                              </div>
+
+                              {/* Industrial Info Card */}
+                              <div className="col-span-12 lg:col-span-4 row-span-3 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8 flex flex-col">
+                                 <SectionHeader icon={Factory} title="Détails Industriels" />
+                                 <div className="space-y-4 mt-6">
+                                    <FormField label="TVA Intracom." value={selectedSupplier.industrialInfo?.vatNumber} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, vatNumber: v } })} />
+                                    <FormField label="DUNS Number" value={selectedSupplier.industrialInfo?.dunsNumber} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, dunsNumber: v } })} />
+                                    <FormField label="Chiffre d'Affaire" value={selectedSupplier.industrialInfo?.annualRevenue} placeholder="Ex: 5M€" onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, annualRevenue: v } })} />
+                                 </div>
+                              </div>
+
+                              {/* Risk Card */}
+                              <div className="col-span-12 lg:col-span-4 row-span-2 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-6 flex flex-col justify-between">
+                                 <SectionHeader icon={Activity} title="Indice de Risque" />
+                                 <div className="flex items-center gap-6">
+                                    <div className="relative w-20 h-20 flex items-center justify-center shrink-0">
+                                       <svg className="w-full h-full" viewBox="0 0 100 100">
+                                          <circle className="text-[var(--border-subtle)] stroke-current" strokeWidth="10" cx="50" cy="50" r="40" fill="transparent"></circle>
+                                          <circle
+                                             className={`${selectedSupplier.riskScore > 60 ? 'text-rose-500' : 'text-emerald-500'} stroke-current transition-all duration-1000`}
+                                             strokeWidth="10"
+                                             strokeLinecap="round"
+                                             cx="50"
+                                             cy="50"
+                                             r="40"
+                                             fill="transparent"
+                                             strokeDasharray={`${selectedSupplier.riskScore * 2.51}, 251`}
+                                             transform="rotate(-90 50 50)"
+                                          ></circle>
+                                       </svg>
+                                       <span className="absolute text-xl font-black">{selectedSupplier.riskScore}%</span>
+                                    </div>
+                                    <div className="flex-1">
+                                       <ComplianceBadge status={selectedSupplier.complianceStatus} size="sm" />
+                                       <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest mt-2 tracking-[0.2em]">Audit: Passé</p>
+                                    </div>
+                                 </div>
+                              </div>
+
+                              {/* Products Preview */}
+                              <div className="col-span-12 lg:col-span-4 row-span-3 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8 flex flex-col overflow-hidden">
+                                 <SectionHeader icon={LayoutGrid} title="Produits (Aperçu)" badge={selectedSupplier.products?.length.toString()} />
+                                 <div className="flex-1 overflow-y-auto space-y-3 mt-4 scrollbar-hide">
+                                    {selectedSupplier.products?.slice(0, 3).map(p => (
+                                       <div key={p.id} className="p-3 bg-[var(--bg-main)]/30 border border-[var(--border-subtle)] rounded-xl flex justify-between items-center group">
+                                          <span className="text-xs font-bold">{p.name}</span>
+                                          <ChevronRight className="w-3 h-3 text-[var(--text-muted)] group-hover:text-[var(--accent)] transition-all" />
+                                       </div>
+                                    ))}
+                                    <button
+                                       onClick={() => setActiveTab('PDM')}
+                                       className="w-full py-3 border border-[var(--accent)]/20 rounded-xl text-[9px] font-black text-[var(--accent)] uppercase tracking-widest hover:bg-[var(--accent)] hover:text-white transition-all"
+                                    >
+                                       Voir tout le catalogue
+                                    </button>
+                                 </div>
+                              </div>
+
+                           </div>
+                           </div>
                   </div>
+                     )}
 
-                  <div className="flex-1 overflow-hidden p-8 bg-[var(--bg-main)]/5">
-                     <div className="grid grid-cols-12 grid-rows-6 gap-6 h-full bento-stagger">
+                  {activeTab === 'GFSI' && (
+                     <div className="bg-[var(--bg-card)] rounded-[40px] p-10 border border-[var(--border-subtle)] animate-fade-in shadow-2xl">
+                        <GFSIApprovalTab supplier={selectedSupplier} />
+                     </div>
+                  )}
 
-                        {/* Main Identity Card */}
-                        <div className="col-span-12 lg:col-span-8 row-span-3 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8 flex flex-col">
-                           <div className="space-y-6">
-                              <SectionHeader icon={Contact} title="Informations Générales" />
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                 <FormField label="Nom Commercial" value={selectedSupplier.name} readOnly={true} />
-                                 <FormField label="Code Fournisseur" value={selectedSupplier.code} placeholder="S00001" onChange={(v: string) => updateSupplier(selectedSupplier.id, { code: v })} />
-                                 <FormField label="Email Principal" value={selectedSupplier.contactEmail} onChange={(v: string) => updateSupplier(selectedSupplier.id, { contactEmail: v })} />
-                                 <FormField label="Téléphone" placeholder="+33..." onChange={(v: string) => { }} />
-                                 <FormField label="Site Web" value={selectedSupplier.website} placeholder="www.example.com" onChange={(v: string) => updateSupplier(selectedSupplier.id, { website: v })} />
-                                 <FormField label="Classification" value={selectedSupplier.classification} placeholder="Direct / Indirect" onChange={(v: string) => updateSupplier(selectedSupplier.id, { classification: v })} />
-                              </div>
-                           </div>
-                           <div className="mt-8">
-                              <SectionHeader icon={Building2} title="Siège Social" />
-                              <div className="space-y-4 mt-4">
-                                 <FormField label="Adresse" value={selectedSupplier.address} placeholder="123 Rue du Commerce" onChange={(v: string) => updateSupplier(selectedSupplier.id, { address: v })} />
-                                 <div className="grid grid-cols-2 gap-4">
-                                    <FormField label="Ville" value={selectedSupplier.city} placeholder="Paris" onChange={(v: string) => updateSupplier(selectedSupplier.id, { city: v })} />
-                                    <FormField label="Code Postal" value={selectedSupplier.zipCode} placeholder="75000" onChange={(v: string) => updateSupplier(selectedSupplier.id, { zipCode: v })} />
-                                 </div>
-                              </div>
-                           </div>
+                  {activeTab === 'GED' && (
+                     <div className="bg-[var(--bg-card)] rounded-[40px] p-10 border border-[var(--border-subtle)] animate-fade-in shadow-2xl">
+                        <SupplierGEDTab supplier={selectedSupplier} />
+                     </div>
+                  )}
+
+                  {activeTab === 'INDUSTRIAL' && (
+                     <div className="bg-[var(--bg-card)] rounded-[40px] p-12 border border-[var(--border-subtle)] animate-fade-in max-w-5xl mx-auto shadow-2xl">
+                        <SectionHeader icon={Factory} title="Fiche Industrielle Détaillée" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+                           <FormField label="TVA Intracom." value={selectedSupplier.industrialInfo?.vatNumber} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, vatNumber: v } })} />
+                           <FormField label="DUNS Number" value={selectedSupplier.industrialInfo?.dunsNumber} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, dunsNumber: v } })} />
+                           <FormField label="Chiffre d'Affaire" value={selectedSupplier.industrialInfo?.annualRevenue} placeholder="Ex: 5M€" onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, annualRevenue: v } })} />
+                           <FormField label="Capacité Hebdo" placeholder="Ex: 50T" onChange={() => { }} />
+                           <FormField label="Site Web" value={selectedSupplier.website} onChange={(v: string) => updateSupplier(selectedSupplier.id, { website: v })} />
+                           <FormField label="Code Fournisseur" value={selectedSupplier.code} onChange={(v: string) => updateSupplier(selectedSupplier.id, { code: v })} />
                         </div>
-
-                        {/* Contacts Card */}
-                        <div className="col-span-12 lg:col-span-4 row-span-4 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8 flex flex-col">
-                           <SectionHeader icon={Users} title="Contacts Tiers" badge={selectedSupplier.contacts?.length.toString() || '0'} />
-                           <div className="flex-1 overflow-y-auto space-y-4 pr-2 -mr-2 scrollbar-hide">
-                              {selectedSupplier.contacts?.map(c => (
-                                 <div key={c.id} className="p-4 bg-[var(--bg-main)]/30 border border-[var(--border-subtle)] rounded-xl shadow-sm hover:border-[var(--accent)] transition-all group relative">
-                                    <div className="flex items-center gap-3">
-                                       <div className="w-8 h-8 bg-[var(--accent)]/10 rounded-full flex items-center justify-center font-bold text-[var(--accent)] text-xs">
-                                          {c.name.charAt(0)}
-                                       </div>
-                                       <div className="flex-1 min-w-0">
-                                          <p className="font-bold text-sm truncate">{c.name}</p>
-                                          <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">{c.role}</p>
-                                       </div>
-                                    </div>
-                                    <div className="mt-3 flex items-center gap-2 text-[10px] text-[var(--text-secondary)]">
-                                       <div className="w-1 h-1 rounded-full bg-[var(--accent)]"></div>
-                                       {c.email}
-                                    </div>
-                                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                       <Edit3 className="w-3.5 h-3.5 text-[var(--text-muted)] cursor-pointer hover:text-[var(--accent)]" />
-                                    </div>
-                                 </div>
-                              ))}
-                              <button className="w-full h-24 border-2 border-dashed border-[var(--border-subtle)] rounded-xl flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all group">
-                                 <Plus className="w-5 h-5 mb-1" />
-                                 <span className="text-[10px] font-bold uppercase tracking-widest">Ajouter un Contact</span>
-                              </button>
+                        <div className="mt-12 p-10 bg-[var(--bg-main)]/30 rounded-3xl border border-[var(--border-subtle)]">
+                           <SectionHeader icon={MapPin} title="Localisation Géostratégique" />
+                           <div className="h-80 bg-[var(--bg-sidebar)] rounded-2xl flex flex-col items-center justify-center text-[var(--text-muted)] border border-[var(--border-subtle)] mt-6 group">
+                              <MapPin className="w-12 h-12 mb-4 opacity-20 group-hover:scale-110 group-hover:text-[var(--accent)] group-hover:opacity-100 transition-all duration-700" />
+                              <p className="text-sm font-bold uppercase tracking-[0.3em]">Coordonnées GPS: {selectedSupplier.industrialInfo?.address || 'Non spécifié'}</p>
                            </div>
-                        </div>
-
-                        {/* Industrial Info Card */}
-                        <div className="col-span-12 lg:col-span-4 row-span-3 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8 flex flex-col">
-                           <SectionHeader icon={Factory} title="Informations Industrielles" />
-                           <div className="space-y-4 mt-6">
-                              <FormField label="TVA Intracom." value={selectedSupplier.industrialInfo?.vatNumber} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, vatNumber: v } })} />
-                              <FormField label="DUNS Number" value={selectedSupplier.industrialInfo?.dunsNumber} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, dunsNumber: v } })} />
-                              <FormField label="Chiffre d'Affaire" value={selectedSupplier.industrialInfo?.annualRevenue} placeholder="Ex: 5M€" onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, annualRevenue: v } })} />
-                           </div>
-                           <div className="mt-8">
-                              <SectionHeader icon={MapPin} title="Site de Production" />
-                              <div className="space-y-4 mt-4">
-                                 <FormField label="Adresse du Site" value={selectedSupplier.industrialInfo?.address} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, address: v } })} />
-                                 <FormField label="Ville de Production" value={selectedSupplier.industrialInfo?.city} onChange={(v: string) => updateSupplier(selectedSupplier.id, { industrialInfo: { ...selectedSupplier.industrialInfo, city: v } })} />
-                              </div>
-                           </div>
-                        </div>
-
-                        {/* Risk & Compliance Card */}
-                        <div className="col-span-12 lg:col-span-4 row-span-2 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-6 flex flex-col justify-between">
-                           <SectionHeader icon={Activity} title="Score de Risque" />
-                           <div className="flex items-center gap-6">
-                              <div className="relative w-20 h-20 flex items-center justify-center shrink-0">
-                                 <svg className="w-full h-full" viewBox="0 0 100 100">
-                                    <circle className="text-[var(--border-subtle)] stroke-current" strokeWidth="10" cx="50" cy="50" r="40" fill="transparent"></circle>
-                                    <circle
-                                       className={`${selectedSupplier.riskScore > 60 ? 'text-rose-500' : 'text-emerald-500'} stroke-current transition-all duration-1000`}
-                                       strokeWidth="10"
-                                       strokeLinecap="round"
-                                       cx="50"
-                                       cy="50"
-                                       r="40"
-                                       fill="transparent"
-                                       strokeDasharray={`${selectedSupplier.riskScore * 2.51}, 251`}
-                                       transform="rotate(-90 50 50)"
-                                    ></circle>
-                                 </svg>
-                                 <span className="absolute text-xl font-black">{selectedSupplier.riskScore}%</span>
-                              </div>
-                              <div className="flex-1">
-                                 <ComplianceBadge status={selectedSupplier.complianceStatus} size="sm" />
-                                 <p className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-widest mt-2">Dernier Audit: Passé</p>
-                              </div>
-                           </div>
-                        </div>
-
-                        {/* GFSI Approval Card */}
-                        <div className="col-span-12 lg:col-span-6 xl:col-span-6 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8">
-                           <GFSIApprovalTab supplier={selectedSupplier} />
-                        </div>
-
-                        {/* GED Documents Card */}
-                        <div className="col-span-12 lg:col-span-6 xl:col-span-6 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8">
-                           <SupplierGEDTab supplier={selectedSupplier} />
-                        </div>
-
-                        {/* Products Card */}
-                        <div className="col-span-12 lg:col-span-6 xl:col-span-6 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8 flex flex-col">
-                           <SectionHeader icon={LayoutGrid} title="Produits Référencés" badge={selectedSupplier.products?.length.toString() || '0'} />
-                           <div className="flex-1 overflow-y-auto space-y-4 pr-2 -mr-2 scrollbar-hide mt-6">
-                              {selectedSupplier.products?.map(p => (
-                                 <div key={p.id} className="p-4 bg-[var(--bg-main)]/30 border border-[var(--border-subtle)] rounded-xl shadow-sm hover:border-[var(--accent)] transition-all group">
-                                    <div className="flex justify-between items-start mb-3">
-                                       <div className="p-2 bg-[var(--accent)]/10 rounded-lg">
-                                          <LayoutGrid className="w-4 h-4 text-[var(--accent)]" />
-                                       </div>
-                                       <span className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-widest bg-[var(--bg-main)] px-2 py-1 rounded">V{p.versions?.[0]?.version || '1.0'}</span>
-                                    </div>
-                                    <h4 className="font-bold text-sm mb-1">{p.name}</h4>
-                                    <p className="text-[10px] text-[var(--text-muted)] font-medium mb-3">{p.category}</p>
-                                    <div className="flex justify-between items-center pt-3 border-t border-[var(--border-subtle)]">
-                                       <span className="text-[10px] font-bold text-[var(--success)]">{p.status}</span>
-                                       <button className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest flex items-center gap-1 group-hover:gap-2 transition-all">
-                                          Fiche technique <ChevronRight className="w-3 h-3" />
-                                       </button>
-                                    </div>
-                                 </div>
-                              ))}
-                              <button className="w-full h-24 border-2 border-dashed border-[var(--border-subtle)] rounded-xl flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all group">
-                                 <Plus className="w-5 h-5 mb-1" />
-                                 <span className="text-[10px] font-bold uppercase tracking-widest">Nouveau Produit</span>
-                              </button>
-                           </div>
-                        </div>
-
-                        {/* Journal Card */}
-                        <div className="col-span-12 lg:col-span-4 row-span-3 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-3xl p-8 flex flex-col overflow-hidden">
-                           <SectionHeader icon={History} title="Notes d'Audit" badge={selectedSupplier.commentaries?.length.toString() || '0'} />
-                           <div className="flex-1 overflow-y-auto space-y-4 pr-2 -mr-2 scrollbar-hide">
-                              {selectedSupplier.commentaries?.sort((a, b) => b.timestamp - a.timestamp).map((c, idx) => (
-                                 <div key={c.id} className="p-4 bg-[var(--bg-main)]/30 border border-[var(--border-subtle)] rounded-xl relative group">
-                                    <div className="flex justify-between items-start mb-2">
-                                       <span className="text-[9px] font-black text-[var(--accent)] uppercase tracking-tighter">{c.author}</span>
-                                       <span className="text-[8px] text-[var(--text-muted)]">{new Date(c.timestamp).toLocaleDateString()}</span>
-                                    </div>
-                                    <p className="text-[11px] text-[var(--text-secondary)] line-clamp-2">{c.text}</p>
-                                 </div>
-                              ))}
-                           </div>
-                           <button className="mt-4 w-full py-2 bg-[var(--accent)]/5 border border-[var(--accent)]/10 rounded-xl text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest hover:bg-[var(--accent)]/10 transition-all">
-                              Ajouter une note
-                           </button>
                         </div>
                      </div>
-                  </div>
+                  )}
 
-                  {/* Fixed Footer with Premium Effects */}
-                  <div className="p-8 bg-[var(--bg-card)]/80 backdrop-blur-2xl border-t border-[var(--border-subtle)] flex justify-between items-center shrink-0">
-                     <div className="flex items-center gap-8">
-                        <div className="flex flex-col">
-                           <span className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest">Dernière mise à jour</span>
-                           <span className="text-xs font-bold">Aujourd'hui, 14:15</span>
-                        </div>
-                        <div className="w-px h-8 bg-[var(--border-subtle)]" />
-                        <div className="flex gap-4">
-                           <button className="flex items-center gap-2 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] uppercase tracking-[0.2em] transition-all group">
-                              <FileDown className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" /> Exporter PDF
-                           </button>
-                           <button className="flex items-center gap-2 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] uppercase tracking-[0.2em] transition-all group">
-                              <Share2 className="w-4 h-4 group-hover:scale-110 transition-transform" /> Partager
-                           </button>
+                  {activeTab === 'PDM' && (
+                     <div className="bg-[var(--bg-card)] rounded-[40px] p-12 border border-[var(--border-subtle)] animate-fade-in shadow-2xl">
+                        <SectionHeader icon={LayoutGrid} title="Catalogue de Référencement" badge={selectedSupplier.products?.length.toString()} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-10">
+                           {selectedSupplier.products?.map(p => (
+                              <div key={p.id} className="p-8 bg-[var(--bg-main)]/30 border border-[var(--border-subtle)] rounded-3xl group hover:border-[var(--accent)] hover:shadow-2xl hover:shadow-indigo-500/10 transition-all">
+                                 <div className="flex justify-between items-start mb-6">
+                                    <div className="w-12 h-12 bg-[var(--accent)]/10 rounded-2xl flex items-center justify-center text-[var(--accent)]">
+                                       <LayoutGrid className="w-6 h-6" />
+                                    </div>
+                                    <span className="text-[10px] font-black text-[var(--text-muted)] bg-[var(--bg-sidebar)] px-3 py-1.5 rounded-full border border-[var(--border-subtle)] tracking-widest">V1.0</span>
+                                 </div>
+                                 <h4 className="font-black text-xl mb-1">{p.name}</h4>
+                                 <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest mb-8">{p.category}</p>
+                                 <div className="flex items-center justify-between pt-6 border-t border-[var(--border-subtle)]">
+                                    <span className="text-xs font-black text-emerald-500 uppercase tracking-widest">{p.status}</span>
+                                    <button className="text-[10px] font-black text-[var(--accent)] uppercase tracking-widest flex items-center gap-2 group-hover:gap-3 transition-all">Technique <Plus className="w-3.5 h-3.5" /></button>
+                                 </div>
+                              </div>
+                           ))}
+                           <div className="p-8 border-4 border-dashed border-[var(--border-subtle)] rounded-3xl flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all cursor-pointer group">
+                              <Plus className="w-10 h-10 mb-4 group-hover:scale-125 transition-transform" />
+                              <span className="text-xs font-black uppercase tracking-widest">Référencer un Produit</span>
+                           </div>
                         </div>
                      </div>
+                  )}
 
-                     <div className="flex items-center gap-4">
-                        {isEditMode && (
-                           <button
-                              onClick={() => setIsEditMode(false)}
-                              className="px-8 py-3.5 rounded-2xl text-[11px] font-bold uppercase tracking-widest text-rose-500 hover:bg-rose-500/5 transition-all"
-                           >
-                              Annuler
-                           </button>
-                        )}
+                  {activeTab === 'JOURNAL' && (
+                     <div className="bg-[var(--bg-card)] rounded-[40px] p-12 border border-[var(--border-subtle)] animate-fade-in max-w-5xl mx-auto shadow-2xl">
+                        <SectionHeader icon={History} title="Audit Trail & Communications" />
+                        <div className="mt-10 space-y-8">
+                           <div className="p-8 bg-[var(--bg-main)] shadow-inner rounded-3xl border border-[var(--border-subtle)] focus-within:ring-4 focus-within:ring-[var(--accent)]/5 transition-all">
+                              <textarea
+                                 placeholder="Consigner un événement d'audit ou une instruction stratégique..."
+                                 className="w-full h-40 bg-transparent outline-none resize-none text-base font-medium placeholder:text-[var(--text-muted)]"
+                                 value={newCommentText}
+                                 onChange={(e) => setNewCommentText(e.target.value)}
+                              />
+                              <div className="flex justify-end pt-6 border-t border-[var(--border-subtle)]/50 mt-6">
+                                 <button
+                                    onClick={handleAddComment}
+                                    disabled={!newCommentText}
+                                    className="px-12 py-4 bg-[var(--accent)] text-white rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-2xl shadow-indigo-500/30 active:scale-95 transition-all disabled:opacity-30"
+                                 >
+                                    Diffuser l'Instruction
+                                 </button>
+                              </div>
+                           </div>
+                           <div className="space-y-6 pt-10">
+                              {selectedSupplier.commentaries?.sort((a, b) => b.timestamp - a.timestamp).map(c => (
+                                 <div key={c.id} className="flex gap-8 items-start group">
+                                    <div className="shrink-0 w-12 h-12 bg-[var(--bg-sidebar)] border border-[var(--border-subtle)] rounded-2xl flex items-center justify-center font-black text-[var(--accent)] group-hover:bg-[var(--accent)] group-hover:text-white transition-all duration-500">
+                                       {c.author.charAt(0)}
+                                    </div>
+                                    <div className="flex-1 bg-[var(--bg-main)]/30 p-8 rounded-3xl border border-[var(--border-subtle)] group-hover:bg-[var(--bg-main)] group-hover:shadow-xl transition-all">
+                                       <div className="flex justify-between items-center mb-4">
+                                          <h5 className="font-black text-sm tracking-tight">{c.author}</h5>
+                                          <span className="text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-sidebar)] px-3 py-1 rounded-full border border-[var(--border-subtle)]">{new Date(c.timestamp).toLocaleString()}</span>
+                                       </div>
+                                       <p className="text-sm font-medium text-[var(--text-secondary)] leading-relaxed">{c.text}</p>
+                                    </div>
+                                 </div>
+                              ))}
+                           </div>
+                        </div>
+                     </div>
+                  )}
+               </div>
+
+               {/* Fixed Footer with Premium Effects */}
+               <div className="p-8 bg-[var(--bg-card)]/80 backdrop-blur-2xl border-t border-[var(--border-subtle)] flex justify-between items-center shrink-0">
+                  <div className="flex items-center gap-8">
+                     <div className="flex flex-col">
+                        <span className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest">Dernière mise à jour</span>
+                        <span className="text-xs font-bold">Aujourd'hui, 14:15</span>
+                     </div>
+                     <div className="w-px h-8 bg-[var(--border-subtle)]" />
+                     <div className="flex gap-4">
                         <button
-                           onClick={() => setIsEditMode(!isEditMode)}
-                           className={`flex items-center gap-3 px-12 py-4 rounded-[22px] text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl active:scale-95 ${isEditMode
-                              ? 'bg-emerald-500 text-white shadow-emerald-500/30'
-                              : 'bg-[var(--accent)] text-white shadow-indigo-500/30'
-                              }`}
+                           onClick={() => addNotification({ title: 'Export PDF', message: 'Génération du dossier fournisseur...', type: 'SUCCESS' })}
+                           className="flex items-center gap-2 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] uppercase tracking-[0.2em] transition-all group"
                         >
-                           {isEditMode ? <><Save className="w-5 h-5" /> Confirmer les modifications</> : <><Edit3 className="w-5 h-5" /> Passer en Edition</>}
+                           <FileDown className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" /> Exporter PDF
+                        </button>
+                        <button
+                           onClick={() => addNotification({ title: 'Partage', message: 'Lien de consultation sécurisé généré.', type: 'SUCCESS' })}
+                           className="flex items-center gap-2 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] uppercase tracking-[0.2em] transition-all group"
+                        >
+                           <Share2 className="w-4 h-4 group-hover:scale-110 transition-transform" /> Partager
                         </button>
                      </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                     {isEditMode && (
+                        <button
+                           onClick={() => setIsEditMode(false)}
+                           className="px-8 py-3.5 rounded-2xl text-[11px] font-bold uppercase tracking-widest text-rose-500 hover:bg-rose-500/5 transition-all"
+                        >
+                           Annuler
+                        </button>
+                     )}
+                     <button
+                        onClick={() => setIsEditMode(!isEditMode)}
+                        className={`flex items-center gap-3 px-12 py-4 rounded-[22px] text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl active:scale-95 ${isEditMode
+                           ? 'bg-emerald-500 text-white shadow-emerald-500/30'
+                           : 'bg-[var(--accent)] text-white shadow-indigo-500/30'
+                           }`}
+                     >
+                        {isEditMode ? <><Save className="w-5 h-5" /> Confirmer les modifications</> : <><Edit3 className="w-5 h-5" /> Passer en Edition</>}
+                     </button>
                   </div>
                </div>
             </div>
          )}
-
          {/* Add Supplier Modal Redesign */}
          {isModalOpen && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in">
@@ -564,7 +616,7 @@ const SupplierHub: React.FC = () => {
                      <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-[var(--border-subtle)] rounded-lg">
                         <X className="w-5 h-5" />
                      </button>
-                  </div>
+                  </div >
 
                   <form onSubmit={(e) => {
                      e.preventDefault();
@@ -611,35 +663,32 @@ const SupplierHub: React.FC = () => {
                         <button type="submit" className="px-8 py-2.5 bg-[var(--accent)] text-white rounded-xl text-[11px] font-bold uppercase tracking-wider shadow-lg shadow-indigo-500/20">Créer Dossier</button>
                      </div>
                   </form>
-               </div>
-            </div>
-         )}
+               </div >
+               {/* Bulk Import Modal Redesign */}
+               {isBulkModalOpen && (
+                  <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in">
+                     <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsBulkModalOpen(false)}></div>
+                     <div className="relative w-full max-w-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl shadow-2xl overflow-hidden p-8 flex flex-col items-center">
+                        <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6">
+                           <FileSpreadsheet className="w-8 h-8 text-emerald-500" />
+                        </div>
+                        <h3 className="text-xl font-bold mb-2">Importation Massive</h3>
+                        <p className="text-center text-[11px] text-[var(--text-muted)] font-medium mb-8">Téléchargez votre liste XLS ou CSV pour un onboarding groupé.</p>
 
-         {/* Bulk Import Modal Redesign */}
-         {isBulkModalOpen && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in">
-               <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsBulkModalOpen(false)}></div>
-               <div className="relative w-full max-w-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl shadow-2xl overflow-hidden p-8 flex flex-col items-center">
-                  <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6">
-                     <FileSpreadsheet className="w-8 h-8 text-emerald-500" />
+                        <div className="w-full p-10 border-2 border-dashed border-[var(--border-subtle)] rounded-3xl flex flex-col items-center justify-center group hover:border-[var(--accent)] transition-all cursor-pointer" onClick={() => excelInputRef.current?.click()}>
+                           <UploadCloud className="w-10 h-10 text-[var(--text-muted)] group-hover:text-[var(--accent)] mb-4 transition-colors" />
+                           <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">Glisser-déposer ou parcourir</span>
+                           <input type="file" ref={excelInputRef} className="hidden" accept=".xlsx,.xls,.csv" onChange={handleExcelImport} />
+                        </div>
+
+                        <button onClick={downloadExcelTemplate} className="mt-8 flex items-center gap-2 text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest hover:underline">
+                           <FileDown className="w-4 h-4" /> Télécharger le gabarit
+                        </button>
+                     </div>
                   </div>
-                  <h3 className="text-xl font-bold mb-2">Importation Massive</h3>
-                  <p className="text-center text-[11px] text-[var(--text-muted)] font-medium mb-8">Téléchargez votre liste XLS ou CSV pour un onboarding groupé.</p>
-
-                  <div className="w-full p-10 border-2 border-dashed border-[var(--border-subtle)] rounded-3xl flex flex-col items-center justify-center group hover:border-[var(--accent)] transition-all cursor-pointer" onClick={() => excelInputRef.current?.click()}>
-                     <UploadCloud className="w-10 h-10 text-[var(--text-muted)] group-hover:text-[var(--accent)] mb-4 transition-colors" />
-                     <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">Glisser-déposer ou parcourir</span>
-                     <input type="file" ref={excelInputRef} className="hidden" accept=".xlsx,.xls,.csv" onChange={handleExcelImport} />
-                  </div>
-
-                  <button onClick={downloadExcelTemplate} className="mt-8 flex items-center gap-2 text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest hover:underline">
-                     <FileDown className="w-4 h-4" /> Télécharger le gabarit
-                  </button>
-               </div>
+               )}
             </div>
-         )}
-      </div>
-   );
+         );
 };
 
-export default SupplierHub;
+         export default SupplierHub;
