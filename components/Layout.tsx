@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useWorkspace } from '../context/WorkspaceContext';
+import PlasmaSphere from './PlasmaSphere';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -126,6 +127,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </button>
           ))}
         </nav>
+
+        <div className="px-6 py-8 flex flex-col items-center justify-center relative group">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--accent)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+          <PlasmaSphere className="w-32 h-32 cursor-pointer active:scale-95 transition-transform" />
+          <div className="mt-4 text-center">
+            <span className="text-[9px] font-black text-[var(--accent)] uppercase tracking-[0.3em] opacity-40 group-hover:opacity-100 transition-opacity">Core Engine Active</span>
+          </div>
+          <div className="absolute bottom-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-[var(--border-subtle)] to-transparent" />
+        </div>
 
         <div className="p-4 mt-auto border-t border-[var(--border-subtle)] space-y-2">
           <button onClick={exportWorkspace} className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold hover:bg-[var(--bg-main)] rounded-lg transition-all text-[var(--text-secondary)]">
