@@ -5,42 +5,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>VISITrack - Global Compliance Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/index.css">
-  <style>
-    #root {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out forwards',
+            'slide-up': 'slideUp 0.5s ease-out forwards',
+            'slide-right': 'slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+          }
+        }
+      }
     }
-
-    .scrollbar-hide::-webkit-scrollbar {
-      display: none;
-    }
-
-    .scrollbar-hide {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-  </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@18.2.0",
-    "react-dom": "https://esm.sh/react-dom@18.2.0",
-    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-    "react-router-dom": "https://esm.sh/react-router-dom@6.22.3?external=react,react-dom",
-    "@google/genai": "https://esm.sh/@google/genai@1.37.0",
-    "recharts": "https://esm.sh/recharts@2.12.2?external=react,react-dom",
-    "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react,react-dom",
-    "clsx": "https://esm.sh/clsx@2.1.0",
-    "tailwind-merge": "https://esm.sh/tailwind-merge@2.2.1",
-    "xlsx": "https://esm.sh/xlsx@0.18.5",
-    "react/": "https://esm.sh/react@18.2.0/",
-    "react-dom/": "https://esm.sh/react-dom@18.2.0/"
-  }
-}
-</script>
-  <link rel="stylesheet" href="/index.css">
+  </script>
 </head>
 
 <body>

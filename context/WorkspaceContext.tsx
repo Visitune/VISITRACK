@@ -338,12 +338,10 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       setSettings(DEFAULT_SETTINGS);
     }
     const savedTheme = localStorage.getItem('visitrack_theme') as 'dark' | 'light';
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-    } else {
-      document.documentElement.classList.add('dark');
-    }
+    const initialTheme = savedTheme || 'dark';
+    setTheme(initialTheme);
+    document.documentElement.classList.toggle('dark', initialTheme === 'dark');
+    document.documentElement.classList.toggle('light', initialTheme === 'light');
 
     setIsLoaded(true);
   }, []);
@@ -724,6 +722,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setTheme(newTheme);
     localStorage.setItem('visitrack_theme', newTheme);
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    document.documentElement.classList.toggle('light', newTheme === 'light');
   };
 
   return (

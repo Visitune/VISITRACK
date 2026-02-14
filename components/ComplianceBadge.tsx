@@ -13,27 +13,27 @@ const ComplianceBadge: React.FC<ComplianceBadgeProps> = ({ status, size = 'md' }
 
   switch (status) {
     case ComplianceStatus.COMPLIANT:
-      colorClass = 'bg-emerald-50 text-emerald-700 border-emerald-100';
+      colorClass = 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
       dotClass = 'bg-emerald-500';
       label = 'Conforme';
       break;
     case ComplianceStatus.PENDING:
-      colorClass = 'bg-amber-50 text-amber-700 border-amber-100';
+      colorClass = 'bg-amber-500/10 text-amber-500 border-amber-500/20';
       dotClass = 'bg-amber-500';
       label = 'En Attente';
       break;
     case ComplianceStatus.EXPIRED:
-      colorClass = 'bg-rose-50 text-rose-700 border-rose-100';
+      colorClass = 'bg-rose-500/10 text-rose-500 border-rose-500/20';
       dotClass = 'bg-rose-500';
       label = 'Expiré';
       break;
     case ComplianceStatus.REJECTED:
-      colorClass = 'bg-red-50 text-red-700 border-red-100';
+      colorClass = 'bg-red-500/10 text-red-500 border-red-500/20';
       dotClass = 'bg-red-500';
       label = 'Rejeté';
       break;
     default:
-      colorClass = 'bg-gray-50 text-gray-700 border-gray-100';
+      colorClass = 'bg-gray-500/10 text-gray-500 border-gray-500/20';
       dotClass = 'bg-gray-500';
       label = status;
   }

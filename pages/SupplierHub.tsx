@@ -12,7 +12,6 @@ import {
    FileSpreadsheet, UploadCloud, ChevronDown, MoreHorizontal
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
-import * as XLSX from 'xlsx';
 
 const SupplierHub: React.FC = () => {
    const {
@@ -131,21 +130,21 @@ const SupplierHub: React.FC = () => {
    // UI Components
    const SectionHeader = ({ icon: Icon, title, badge }: { icon: any, title: string, badge?: string }) => (
       <div className="flex justify-between items-center mb-6">
-         <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
-            <Icon className="w-5 h-5 text-indigo-600" /> {title}
+         <h3 className="text-xs font-black text-[var(--text-primary)] uppercase tracking-widest flex items-center gap-3">
+            <Icon className="w-5 h-5 text-[var(--accent)]" /> {title}
          </h3>
-         {badge && <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">{badge}</span>}
+         {badge && <span className="bg-[var(--accent)]/10 text-[var(--accent)] px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">{badge}</span>}
       </div>
    );
 
    const FormField = ({ label, value, onChange, placeholder, type = "text", readOnly = !isEditMode }: any) => (
-      <div className="p-4 bg-slate-50 rounded-lg border border-slate-100 transition-all focus-within:ring-2 focus-within:ring-indigo-500/10 focus-within:border-indigo-200">
-         <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">{label}</label>
+      <div className="p-4 bg-[var(--bg-main)]/50 rounded-lg border border-[var(--border-subtle)] transition-all focus-within:ring-2 focus-within:ring-[var(--accent)]/10 focus-within:border-[var(--accent)]/50">
+         <label className="text-[9px] font-black text-[var(--text-muted)] uppercase block mb-1">{label}</label>
          <input
             type={type}
             readOnly={readOnly}
             placeholder={placeholder}
-            className={`w-full bg-transparent font-bold text-sm outline-none ${readOnly ? 'text-slate-900' : 'text-indigo-600 cursor-text'}`}
+            className={`w-full bg-transparent font-bold text-sm outline-none ${readOnly ? 'text-[var(--text-primary)]' : 'text-[var(--accent)] cursor-text'}`}
             value={value || ''}
             onChange={e => onChange(e.target.value)}
          />
@@ -412,6 +411,36 @@ const SupplierHub: React.FC = () => {
                      {activeTab === 'GED' && selectedSupplier && (
                         <div className="animate-fade-in">
                            <SupplierGEDTab supplier={selectedSupplier} />
+                        </div>
+                     )}
+
+                     {/* TAB: PDM */}
+                     {activeTab === 'PDM' && (
+                        <div className="space-y-6 animate-fade-in">
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {selectedSupplier.products?.map(p => (
+                                 <div key={p.id} className="p-5 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl shadow-sm hover:border-[var(--accent)] transition-all group">
+                                    <div className="flex justify-between items-start mb-4">
+                                       <div className="p-3 bg-[var(--accent)]/10 rounded-xl">
+                                          <Truck className="w-5 h-5 text-[var(--accent)]" />
+                                       </div>
+                                       <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest bg-[var(--bg-main)] px-2 py-1 rounded">V{p.versions?.[0]?.version || '1.0'}</span>
+                                    </div>
+                                    <h4 className="font-bold text-sm mb-1">{p.name}</h4>
+                                    <p className="text-[10px] text-[var(--text-muted)] font-medium mb-4">{p.category}</p>
+                                    <div className="flex justify-between items-center pt-4 border-t border-[var(--border-subtle)]">
+                                       <span className="text-[10px] font-bold text-[var(--success)]">{p.status}</span>
+                                       <button className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest flex items-center gap-1 group-hover:gap-2 transition-all">
+                                          Fiche technique <ChevronRight className="w-3 h-3" />
+                                       </button>
+                                    </div>
+                                 </div>
+                              ))}
+                              <button className="h-full min-h-[160px] border-2 border-dashed border-[var(--border-subtle)] rounded-2xl flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all">
+                                 <Plus className="w-6 h-6 mb-2" />
+                                 <span className="text-[10px] font-bold uppercase tracking-widest">Nouveau Produit</span>
+                              </button>
+                           </div>
                         </div>
                      )}
 
