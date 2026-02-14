@@ -1,43 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-    /* Default variables (Mapping to dark for better initial load) */
-    --bg-main: #0F172A;
-    --bg-card: #1E293B;
+    /* Base Colors - Deep & Professional */
     --accent: #6366F1;
     --accent-hover: #4F46E5;
-    --border-subtle: #334155;
-    --text-primary: #F8FAFC;
-    --text-secondary: #CBD5E1;
-    --text-muted: #94A3B8;
-
     --success: #10B981;
     --warning: #F59E0B;
     --error: #EF4444;
+    --danger: #EF4444;
 }
 
-/* Explicit Dark Override */
+/* Dark Theme - Midnight Depth */
 html.dark {
-    --bg-main: #0F172A;
-    --bg-card: #1E293B;
-    --accent: #6366F1;
-    --accent-hover: #4F46E5;
-    --border-subtle: #334155;
+    --bg-main: #020617;
+    /* Darker Slate */
+    --bg-card: #0F172A;
+    /* Slate 900 */
+    --bg-sidebar: #020617;
+    --border-subtle: #1E293B;
+    /* Slate 800 */
     --text-primary: #F8FAFC;
-    --text-secondary: #CBD5E1;
-    --text-muted: #94A3B8;
+    /* Slate 50 */
+    --text-secondary: #94A3B8;
+    /* Slate 400 */
+    --text-muted: #64748B;
+    /* Slate 500 */
+    --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    --glass-bg: rgba(15, 23, 42, 0.8);
 }
 
-/* Explicit Light Override */
+/* Light Theme - Crisp & Clean */
 html.light {
-    --bg-main: #F8FAFC;
+    --bg-main: #F1F5F9;
+    /* Slate 100 */
     --bg-card: #FFFFFF;
-    --accent: #4F46E5;
-    --accent-hover: #4338CA;
+    --bg-sidebar: #FFFFFF;
     --border-subtle: #E2E8F0;
-    --text-primary: #1E293B;
+    /* Slate 200 */
+    --text-primary: #0F172A;
+    /* Slate 900 */
     --text-secondary: #475569;
-    --text-muted: #64748B;
+    /* Slate 600 */
+    --text-muted: #94A3B8;
+    /* Slate 400 */
+    --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    --glass-bg: rgba(255, 255, 255, 0.8);
 }
 
 body {
@@ -46,8 +53,31 @@ body {
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-main);
     color: var(--text-primary);
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Premium Utilities */
+.card-premium {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 1.25rem;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+}
+
+.glass-panel {
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
 }
 
 #root {

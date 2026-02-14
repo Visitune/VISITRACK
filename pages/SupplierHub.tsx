@@ -130,21 +130,21 @@ const SupplierHub: React.FC = () => {
    // UI Components
    const SectionHeader = ({ icon: Icon, title, badge }: { icon: any, title: string, badge?: string }) => (
       <div className="flex justify-between items-center mb-6">
-         <h3 className="text-xs font-black text-[var(--text-primary)] uppercase tracking-widest flex items-center gap-3">
-            <Icon className="w-5 h-5 text-[var(--accent)]" /> {title}
+         <h3 className="text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-widest flex items-center gap-3">
+            <Icon className="w-4 h-4 text-[var(--accent)]" /> {title}
          </h3>
-         {badge && <span className="bg-[var(--accent)]/10 text-[var(--accent)] px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">{badge}</span>}
+         {badge && <span className="bg-[var(--accent)]/10 text-[var(--accent)] px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest">{badge}</span>}
       </div>
    );
 
    const FormField = ({ label, value, onChange, placeholder, type = "text", readOnly = !isEditMode }: any) => (
-      <div className="p-4 bg-[var(--bg-main)]/50 rounded-lg border border-[var(--border-subtle)] transition-all focus-within:ring-2 focus-within:ring-[var(--accent)]/10 focus-within:border-[var(--accent)]/50">
-         <label className="text-[9px] font-black text-[var(--text-muted)] uppercase block mb-1">{label}</label>
+      <div className="p-4 bg-[var(--bg-main)]/30 rounded-xl border border-[var(--border-subtle)] transition-all focus-within:ring-2 focus-within:ring-[var(--accent)]/10 focus-within:border-[var(--accent)]/30">
+         <label className="text-[9px] font-bold text-[var(--text-muted)] uppercase block mb-1">{label}</label>
          <input
             type={type}
             readOnly={readOnly}
             placeholder={placeholder}
-            className={`w-full bg-transparent font-bold text-sm outline-none ${readOnly ? 'text-[var(--text-primary)]' : 'text-[var(--accent)] cursor-text'}`}
+            className={`w-full bg-transparent font-semibold text-sm outline-none ${readOnly ? 'text-[var(--text-primary)]' : 'text-[var(--accent)] cursor-text'}`}
             value={value || ''}
             onChange={e => onChange(e.target.value)}
          />
@@ -209,7 +209,7 @@ const SupplierHub: React.FC = () => {
          </div>
 
          {/* Main List */}
-         <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-subtle)] shadow-sm overflow-hidden flex flex-col">
+         <div className="card-premium overflow-hidden flex flex-col">
             <div className="overflow-x-auto">
                <table className="w-full text-left border-collapse">
                   <thead>
@@ -277,8 +277,8 @@ const SupplierHub: React.FC = () => {
          {/* Extreme Granular Sidebar Redesign */}
          {selectedSupplier && (
             <div className="fixed inset-0 z-50 flex justify-end animate-fade-in">
-               <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={() => setSelectedSupplier(null)}></div>
-               <div className="relative w-full max-w-4xl bg-[var(--bg-card)] h-full border-l border-[var(--border-subtle)] shadow-2xl flex flex-col animate-slide-right">
+               <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedSupplier(null)}></div>
+               <div className="relative w-full max-w-4xl bg-[var(--bg-card)] h-full border-l border-[var(--border-subtle)] shadow-[0_0_50px_rgba(0,0,0,0.3)] flex flex-col animate-slide-right">
 
                   {/* Sidebar Header */}
                   <div className="p-8 border-b border-[var(--border-subtle)] bg-[var(--bg-main)]/30">

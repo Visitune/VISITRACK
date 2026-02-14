@@ -102,7 +102,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".json" />
 
       {/* Modern Compact Sidebar */}
-      <aside className="w-64 bg-[var(--bg-card)] border-r border-[var(--border-subtle)] flex flex-col z-20 shrink-0">
+      <aside className="w-64 bg-[var(--bg-sidebar)] border-r border-[var(--border-subtle)] flex flex-col z-20 shrink-0 transition-colors duration-300">
         <div className="p-6 flex items-center gap-3">
           <div className="w-8 h-8 bg-[var(--accent)] rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20 overflow-hidden">
             <img src="https://raw.githubusercontent.com/M00N69/RAPPELCONSO/main/logo%2004%20copie.jpg" alt="Logo" className="w-full h-full object-cover" />
@@ -116,8 +116,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               key={item.id}
               onClick={() => navigate(item.id)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group ${activePage === item.id || (activePage === '/' && item.id === '/dashboard')
-                  ? 'bg-[var(--accent)] text-white'
-                  : 'text-[var(--text-secondary)] hover:bg-[var(--bg-main)] hover:text-[var(--text-primary)]'
+                ? 'bg-[var(--accent)] text-white'
+                : 'text-[var(--text-secondary)] hover:bg-[var(--bg-main)] hover:text-[var(--text-primary)]'
                 }`}
             >
               <item.icon className={`w-4 h-4 ${activePage === item.id || (activePage === '/' && item.id === '/dashboard') ? 'text-white' : 'text-[var(--text-muted)] group-hover:text-[var(--text-primary)]'

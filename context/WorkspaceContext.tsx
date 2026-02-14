@@ -340,8 +340,11 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const savedTheme = localStorage.getItem('visitrack_theme') as 'dark' | 'light';
     const initialTheme = savedTheme || 'dark';
     setTheme(initialTheme);
-    document.documentElement.classList.toggle('dark', initialTheme === 'dark');
-    document.documentElement.classList.toggle('light', initialTheme === 'light');
+
+    // Explicitly apply theme classes to HTML element
+    document.documentElement.classList.remove('dark', 'light');
+    document.documentElement.classList.add(initialTheme);
+    document.documentElement.setAttribute('data-theme', initialTheme);
 
     setIsLoaded(true);
   }, []);
@@ -720,9 +723,12 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
+    setSettings(prev => ({ ...prev, theme: newTheme }));
     localStorage.setItem('visitrack_theme', newTheme);
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
-    document.documentElement.classList.toggle('light', newTheme === 'light');
+
+    document.documentElement.classList.remove('dark', 'light');
+    document.documentElement.classList.add(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
   };
 
   return (
