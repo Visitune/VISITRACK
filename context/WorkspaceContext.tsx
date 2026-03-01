@@ -3,7 +3,7 @@ import {
   Supplier, ComplianceStatus, WorkspaceState, Settings, AppNotification,
   NonConformity, Product, Campaign, Comment, ContactPerson, Attachment,
   RawMaterial, CrisisCase, GFSICertificate, ReceptionControl, LaboratoryAnalysis,
-  AnnualReview, SupplierQuestionnaire
+  AnnualReview, SupplierQuestionnaire, ProductVersion
 } from '../types';
 
 interface WorkspaceContextType {
@@ -19,6 +19,7 @@ interface WorkspaceContextType {
   addCommentToSupplier: (supplierId: string, comment: Omit<Comment, 'id' | 'timestamp'>) => void;
   addAttachmentToSupplier: (supplierId: string, attachment: Omit<Attachment, 'id' | 'uploadDate'>) => void;
   linkSecondarySupplier: (supplierId: string, subSupplierId: string) => void;
+  linkRawMaterialToSupplier: (supplierId: string, materialId: string) => void;
   addNonConformity: (supplierId: string, nc: NonConformity) => void;
   updateNonConformity: (supplierId: string, ncId: string, updates: Partial<NonConformity>) => void;
   addCampaign: (campaign: Campaign) => void;
@@ -31,6 +32,9 @@ interface WorkspaceContextType {
   importWorkspace: (file: File) => Promise<void>;
   bulkImportSuppliers: (suppliers: Supplier[]) => void;
   resetWorkspace: () => void;
+  updateProduct: (supplierId: string, productId: string, updates: Partial<Product>, reason?: string) => void;
+  updateAttachment: (supplierId: string, attachmentId: string, updates: Partial<Attachment>) => void;
+  addProductToSupplier: (supplierId: string, product: Omit<Product, 'id' | 'versions'>) => void;
 
   // GFSI Functions
   addGFSICertificate: (supplierId: string, certificate: GFSICertificate) => void;
@@ -41,6 +45,19 @@ interface WorkspaceContextType {
   addCrisisCase: (crisis: CrisisCase) => void;
   updateCrisisCase: (id: string, updates: Partial<CrisisCase>) => void;
   addQuestionnaireToSupplier: (supplierId: string, questionnaire: SupplierQuestionnaire) => void;
+  updateQuestionnaireInSupplier: (supplierId: string, questionnaireId: string, updates: Partial<SupplierQuestionnaire>) => void;
+  deleteSupplier: (id: string) => void;
+  deleteProduct: (supplierId: string, productId: string) => void;
+  deleteQuestionnaire: (supplierId: string, questionnaireId: string) => void;
+  updateGFSICertificate: (supplierId: string, certId: string, updates: Partial<GFSICertificate>) => void;
+  deleteGFSICertificate: (supplierId: string, certId: string) => void;
+  updateReceptionControl: (supplierId: string, controlId: string, updates: Partial<ReceptionControl>) => void;
+  deleteReceptionControl: (supplierId: string, controlId: string) => void;
+  updateLaboratoryAnalysis: (supplierId: string, analysisId: string, updates: Partial<LaboratoryAnalysis>) => void;
+  deleteLaboratoryAnalysis: (supplierId: string, analysisId: string) => void;
+  deleteRawMaterial: (id: string) => void;
+  updateContact: (supplierId: string, contactId: string, updates: Partial<ContactPerson>) => void;
+  deleteContact: (supplierId: string, contactId: string) => void;
   // Theme Management
   theme: 'dark' | 'light';
   toggleTheme: () => void;
@@ -102,7 +119,7 @@ const INITIAL_DATA: Supplier[] = [
         origin: 'France',
         ingredients: ['Tomates de plein champ'],
         allergens: [],
-        versions: [{ id: 'V1', timestamp: '2023-12-01T10:00:00Z', author: 'System', ingredients: ['Tomates'], allergens: [] }]
+        versions: [{ id: 'V1', timestamp: '2023-12-01T10:00:00Z', author: 'System', status: 'ACTIVE', ingredients: ['Tomates'], allergens: [] }]
       }
     ],
     approvalStatus: 'APPROVED',
@@ -143,6 +160,7 @@ const INITIAL_DATA: Supplier[] = [
     nonConformities: [
       { id: 'NC-1', createdAt: '2024-01-10', dueDate: '2024-02-10', title: 'Allergène Non Déclaré', severity: 'CRITICAL', description: 'Traces d\'allergènes non déclarés (Arachide) détectés dans le Curry.', status: 'OPEN', correctiveAction: 'Rappel de lot immédiat.' }
     ],
+    expectedDocumentTypes: ['CERTIFICATE', 'SAQ'],
     attachments: [],
     contacts: [
       { id: 'C3', name: 'Raj Patel', role: 'Directeur Export', email: 'raj@globalspices.in' }
@@ -508,6 +526,18 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }));
   };
 
+  const linkRawMaterialToSupplier = (supplierId: string, materialId: string) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        const current = s.rawMaterials || [];
+        if (current.includes(materialId)) return s;
+        return { ...s, rawMaterials: [...current, materialId] };
+      }
+      return s;
+    }));
+    addNotification({ title: 'Matière Première', message: `Matière rattachée au fournisseur avec succès.`, type: 'SUCCESS' });
+  };
+
   const addNonConformity = (supplierId: string, nc: NonConformity) => {
     setSuppliers(prev => prev.map(s => {
       if (s.id === supplierId) {
@@ -627,6 +657,69 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   };
 
+  const updateProduct = (supplierId: string, productId: string, updates: Partial<Product>, reason?: string) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          products: s.products.map(p => {
+            if (p.id === productId) {
+              const newVersion: ProductVersion = {
+                id: `V-${Date.now()}`,
+                timestamp: new Date().toISOString(),
+                author: 'Admin Qualité',
+                status: 'ACTIVE',
+                ingredients: updates.ingredients || p.ingredients || [],
+                allergens: updates.allergens || p.allergens || [],
+                nutrition: updates.nutrition || p.nutrition,
+                attachmentId: (updates as any).attachmentId || (p as any).attachmentId,
+                diff: reason || 'Mise à jour manuelle'
+              };
+
+              // Mark old versions as OBSOLETE
+              const updatedVersions = (p.versions || []).map(v => ({ ...v, status: 'OBSOLETE' as const }));
+
+              return {
+                ...p,
+                ...updates,
+                versions: [newVersion, ...updatedVersions]
+              };
+            }
+            return p;
+          })
+        };
+      }
+      return s;
+    }));
+    addNotification({ title: 'Produit mis à jour', message: `La fiche technique de ${productId} a été versionnée.`, type: 'SUCCESS' });
+  };
+
+  const addProductToSupplier = (supplierId: string, product: Omit<Product, 'id' | 'versions'>) => {
+    const newProduct: Product = {
+      ...product,
+      id: `PROD-${Date.now()}`,
+      versions: []
+    };
+    setSuppliers(prev => prev.map(s =>
+      s.id === supplierId
+        ? { ...s, products: [...(s.products || []), newProduct] }
+        : s
+    ));
+    addNotification({ title: 'Produit référencé', message: `${newProduct.name} ajouté au catalogue.`, type: 'SUCCESS' });
+  };
+
+  const updateAttachment = (supplierId: string, attachmentId: string, updates: Partial<Attachment>) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          attachments: s.attachments.map(a => a.id === attachmentId ? { ...a, ...updates } : a)
+        };
+      }
+      return s;
+    }));
+  };
+
   // --- GFSI Functions Implementation ---
 
   const addGFSICertificate = (supplierId: string, certificate: GFSICertificate) => {
@@ -720,6 +813,148 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     });
   };
 
+  const deleteSupplier = (id: string) => {
+    setSuppliers(prev => prev.filter(s => s.id !== id));
+    addNotification({ title: 'Fournisseur supprimé', message: 'Le fournisseur a été retiré du référentiel.', type: 'INFO' });
+  };
+
+  const deleteProduct = (supplierId: string, productId: string) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          products: (s.products || []).filter(p => p.id !== productId)
+        };
+      }
+      return s;
+    }));
+    addNotification({ title: 'Produit supprimé', message: 'Le produit a été retiré du catalogue.', type: 'INFO' });
+  };
+
+  const deleteQuestionnaire = (supplierId: string, questionnaireId: string) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          questionnaires: (s.questionnaires || []).filter(q => q.id !== questionnaireId)
+        };
+      }
+      return s;
+    }));
+  };
+
+  const updateGFSICertificate = (supplierId: string, certId: string, updates: Partial<GFSICertificate>) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          gfsiCertificates: (s.gfsiCertificates || []).map(c => c.id === certId ? { ...c, ...updates } : c)
+        };
+      }
+      return s;
+    }));
+  };
+
+  const deleteGFSICertificate = (supplierId: string, certId: string) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          gfsiCertificates: (s.gfsiCertificates || []).filter(c => c.id !== certId)
+        };
+      }
+      return s;
+    }));
+  };
+
+  const updateReceptionControl = (supplierId: string, controlId: string, updates: Partial<ReceptionControl>) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          receptionControls: (s.receptionControls || []).map(rc => rc.id === controlId ? { ...rc, ...updates } : rc)
+        };
+      }
+      return s;
+    }));
+  };
+
+  const deleteReceptionControl = (supplierId: string, controlId: string) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          receptionControls: (s.receptionControls || []).filter(rc => rc.id !== controlId)
+        };
+      }
+      return s;
+    }));
+  };
+
+  const updateLaboratoryAnalysis = (supplierId: string, analysisId: string, updates: Partial<LaboratoryAnalysis>) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          laboratoryAnalyses: (s.laboratoryAnalyses || []).map(la => la.id === analysisId ? { ...la, ...updates } : la)
+        };
+      }
+      return s;
+    }));
+  };
+
+  const deleteLaboratoryAnalysis = (supplierId: string, analysisId: string) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          laboratoryAnalyses: (s.laboratoryAnalyses || []).filter(la => la.id !== analysisId)
+        };
+      }
+      return s;
+    }));
+  };
+
+  const deleteRawMaterial = (id: string) => {
+    setRawMaterials(prev => prev.filter(m => m.id !== id));
+  };
+
+  const updateContact = (supplierId: string, contactId: string, updates: Partial<ContactPerson>) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          contacts: (s.contacts || []).map(c => c.id === contactId ? { ...c, ...updates } : c)
+        };
+      }
+      return s;
+    }));
+  };
+
+  const deleteContact = (supplierId: string, contactId: string) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          contacts: (s.contacts || []).filter(c => c.id !== contactId)
+        };
+      }
+      return s;
+    }));
+  };
+
+  const updateQuestionnaireInSupplier = (supplierId: string, questionnaireId: string, updates: Partial<SupplierQuestionnaire>) => {
+    setSuppliers(prev => prev.map(s => {
+      if (s.id === supplierId) {
+        return {
+          ...s,
+          questionnaires: (s.questionnaires || []).map(q => q.id === questionnaireId ? { ...q, ...updates } : q)
+        };
+      }
+      return s;
+    }));
+  };
+
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
@@ -735,11 +970,15 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     <WorkspaceContext.Provider value={{
       suppliers, campaigns, rawMaterials, crisisCases, settings, notifications,
       addSupplier, updateSupplier, addDocumentToSupplier, addCommentToSupplier, addAttachmentToSupplier,
-      linkSecondarySupplier, addNonConformity, updateNonConformity,
+      linkSecondarySupplier, linkRawMaterialToSupplier, addNonConformity, updateNonConformity,
       addCampaign, updateCampaign, addNotification, markNotificationAsRead,
       clearNotifications, updateSettings, exportWorkspace, importWorkspace, bulkImportSuppliers, resetWorkspace,
       addGFSICertificate, addReceptionControl, addLaboratoryAnalysis, addRawMaterial, updateRawMaterial,
-      addCrisisCase, updateCrisisCase, addQuestionnaireToSupplier,
+      addCrisisCase, updateCrisisCase, addQuestionnaireToSupplier, updateQuestionnaireInSupplier,
+      updateProduct, updateAttachment, addProductToSupplier,
+      deleteSupplier, deleteProduct, deleteQuestionnaire,
+      updateGFSICertificate, deleteGFSICertificate, updateReceptionControl, deleteReceptionControl,
+      updateLaboratoryAnalysis, deleteLaboratoryAnalysis, deleteRawMaterial, updateContact, deleteContact,
       theme, toggleTheme
     }}>
       {children}

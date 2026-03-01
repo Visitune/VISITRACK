@@ -41,13 +41,18 @@ Status: Validé par le directeur technique.`);
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto h-[calc(100vh-2rem)] flex flex-col">
-      <div className="flex justify-between items-center mb-8">
+    <div className="p-8 max-w-7xl mx-auto h-[calc(100vh-2rem)] flex flex-col animate-fade-in">
+      <div className="flex justify-between items-end mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Moteur d'Analyse IA</h1>
-          <p className="text-slate-500 mt-2">Extraire et valider automatiquement les certificats.</p>
+          <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">Moteur d'Analyse IA</h1>
+          <p className="text-[var(--text-muted)] font-bold uppercase tracking-widest text-[10px] mt-2 flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-[var(--accent)]" /> Extraction & Validation Automatisée
+          </p>
         </div>
-        <button onClick={loadExample} className="text-sm text-brand-600 hover:text-brand-700 font-medium bg-brand-50 px-4 py-2 rounded-lg">
+        <button
+          onClick={loadExample}
+          className="bg-[var(--accent-subtle)] text-[var(--accent)] px-5 py-2.5 rounded-lg font-black hover:opacity-90 transition-all border border-[var(--accent)]/10 uppercase tracking-widest text-[9px]"
+        >
           Charger un exemple
         </button>
       </div>
@@ -55,18 +60,21 @@ Status: Validé par le directeur technique.`);
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-0">
         {/* Input Zone */}
         <div className="flex flex-col gap-4">
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col h-full">
-            <label className="text-sm font-bold text-slate-700 mb-2">Contenu du Document (OCR)</label>
+          <div className="bg-[var(--bg-card)] p-8 rounded-xl border border-[var(--border-subtle)] shadow-sm flex flex-col h-full relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-1 h-full bg-[var(--accent)] opacity-20" />
+            <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-4 flex items-center gap-2">
+              <UploadCloud className="w-3.5 h-3.5" /> Contenu du Document (OCR)
+            </label>
             <div className="relative flex-1">
               <textarea
-                className="w-full h-full p-4 bg-slate-50 border border-slate-200 rounded-xl resize-none focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none font-mono text-sm leading-relaxed"
+                className="w-full h-full p-6 bg-[var(--bg-main)]/50 border border-[var(--border-subtle)] rounded-xl resize-none focus:ring-2 focus:ring-[var(--accent)]/10 focus:border-[var(--accent)]/30 outline-none font-mono text-sm leading-relaxed text-[var(--text-primary)] transition-all placeholder:text-[var(--text-muted)]/50"
                 placeholder="Collez ici le texte extrait du PDF..."
                 value={text}
                 onChange={(e) => setText(e.target.value)}
               />
-              <div className="absolute bottom-4 right-4 flex gap-2">
-                <select 
-                  className="bg-white border border-slate-200 rounded-lg text-sm px-3 py-2 shadow-sm focus:ring-2 focus:ring-brand-500 outline-none"
+              <div className="absolute bottom-6 right-6 flex gap-3 items-center">
+                <select
+                  className="bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-lg text-[10px] font-black uppercase tracking-widest px-4 py-2.5 shadow-sm focus:ring-2 focus:ring-[var(--accent)]/10 outline-none text-[var(--text-primary)] appearance-none cursor-pointer hover:border-[var(--accent)]/30 transition-colors"
                   value={type}
                   onChange={(e) => setType(e.target.value)}
                 >
@@ -77,10 +85,10 @@ Status: Validé par le directeur technique.`);
                 <button
                   onClick={handleAnalyze}
                   disabled={loading || !text}
-                  className="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-bold shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  className="bg-[var(--accent)] hover:opacity-90 text-white px-6 py-2.5 rounded-lg font-black shadow-lg shadow-orange-500/20 flex items-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed transition-all uppercase tracking-widest text-[10px]"
                 >
-                  {loading ? <Loader2 className="animate-spin" size={18} /> : <Sparkles size={18} />}
-                  Analyser
+                  {loading ? <Loader2 className="animate-spin" size={16} /> : <Sparkles size={16} />}
+                  {loading ? 'Analyse...' : 'Analyser'}
                 </button>
               </div>
             </div>
@@ -88,42 +96,62 @@ Status: Validé par le directeur technique.`);
         </div>
 
         {/* Result Zone */}
-        <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-6 flex items-center justify-center relative overflow-hidden">
+        <div className="bg-[var(--bg-main)]/30 border-2 border-dashed border-[var(--border-subtle)] rounded-xl p-8 flex items-center justify-center relative overflow-hidden">
           {!result ? (
-            <div className="text-center text-slate-400">
-              <UploadCloud size={48} className="mx-auto mb-4 opacity-50" />
-              <p>Les résultats de l'analyse s'afficheront ici.</p>
+            <div className="text-center group">
+              <div className="w-20 h-20 bg-[var(--bg-card)] rounded-full flex items-center justify-center mx-auto mb-6 border border-[var(--border-subtle)] shadow-inner group-hover:scale-110 transition-transform duration-500">
+                <UploadCloud size={32} className="text-[var(--text-muted)] opacity-30" />
+              </div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)]">En attente de données</p>
+              <p className="text-[9px] text-[var(--text-muted)] mt-2 font-medium opacity-60">Les résultats de l'analyse s'afficheront ici.</p>
             </div>
           ) : (
-            <div className="w-full h-full flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className={`p-4 rounded-xl border-l-4 ${result.isValid ? 'bg-emerald-50 border-emerald-500 text-emerald-800' : 'bg-rose-50 border-rose-500 text-rose-800'} shadow-sm bg-white`}>
-                <div className="flex items-center gap-3">
-                  {result.isValid ? <CheckCircle size={24} /> : <AlertOctagon size={24} />}
+            <div className="w-full h-full flex flex-col gap-6 animate-fade-in">
+              <div className={`p-6 rounded-xl border border-[var(--border-subtle)] ${result.isValid ? 'bg-emerald-500/5 text-emerald-500' : 'bg-rose-500/5 text-rose-500'} shadow-sm relative overflow-hidden`}>
+                <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${result.isValid ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${result.isValid ? 'bg-emerald-500/10' : 'bg-rose-500/10'}`}>
+                    {result.isValid ? <CheckCircle size={24} /> : <AlertOctagon size={24} />}
+                  </div>
                   <div>
-                    <h3 className="font-bold text-lg">{result.isValid ? 'Document Conforme' : 'Attention Requise'}</h3>
-                    <p className="text-sm opacity-90">{result.riskAssessment}</p>
+                    <h3 className="font-black text-lg uppercase tracking-tight">{result.isValid ? 'Document Conforme' : 'Attention Requise'}</h3>
+                    <p className="text-[11px] font-medium opacity-80 mt-1">{result.riskAssessment}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4 flex-1">
-                <div>
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Date d'expiration</label>
-                  <p className="text-xl font-mono font-bold text-slate-800 mt-1">{result.extractedDate || 'N/A'}</p>
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Organisme Émetteur</label>
-                  <p className="text-lg font-medium text-slate-800 mt-1">{result.issuer || 'Inconnu'}</p>
-                </div>
-                <div className="pt-4 border-t border-slate-100">
-                  <div className="flex justify-between items-center mb-1">
-                     <span className="text-sm font-medium text-slate-500">Confiance IA</span>
-                     <span className="text-sm font-bold text-brand-600">{Math.round(result.confidence * 100)}%</span>
+              <div className="bg-[var(--bg-card)] rounded-xl shadow-sm border border-[var(--border-subtle)] p-8 space-y-8 flex-1 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4">
+                  <div className="w-16 h-16 bg-[var(--bg-main)] rounded-full flex items-center justify-center border border-[var(--border-subtle)] shadow-inner">
+                    <FileText className="w-6 h-6 text-[var(--text-muted)] opacity-20" />
                   </div>
-                  <div className="w-full bg-slate-100 rounded-full h-2">
-                    <div 
-                      className="bg-brand-500 h-2 rounded-full transition-all duration-1000" 
-                      style={{ width: `${result.confidence * 100}%` }} 
+                </div>
+
+                <div className="grid grid-cols-2 gap-8">
+                  <div>
+                    <label className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] block mb-2">Date d'expiration</label>
+                    <p className="text-2xl font-black text-[var(--text-primary)] tracking-tight font-mono">{result.extractedDate || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] block mb-2">Confiance IA</label>
+                    <p className={`text-2xl font-black tracking-tight font-mono ${result.confidence > 0.8 ? 'text-emerald-500' : 'text-amber-500'}`}>{Math.round(result.confidence * 100)}%</p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] block mb-2">Organisme Émetteur</label>
+                  <p className="text-lg font-bold text-[var(--text-primary)] uppercase tracking-tight">{result.issuer || 'Inconnu'}</p>
+                </div>
+
+                <div className="pt-6 border-t border-[var(--border-subtle)]">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest">Indice de fiabilité</span>
+                    <span className="text-[10px] font-bold text-[var(--accent)] font-mono">{Math.round(result.confidence * 100)}/100</span>
+                  </div>
+                  <div className="w-full bg-[var(--bg-main)] rounded-full h-1.5 overflow-hidden shadow-inner">
+                    <div
+                      className="bg-[var(--accent)] h-full transition-all duration-1000 shadow-[0_0_10px_rgba(255,107,0,0.5)]"
+                      style={{ width: `${result.confidence * 100}%` }}
                     />
                   </div>
                 </div>

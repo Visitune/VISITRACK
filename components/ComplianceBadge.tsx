@@ -7,46 +7,48 @@ interface ComplianceBadgeProps {
 }
 
 const ComplianceBadge: React.FC<ComplianceBadgeProps> = ({ status, size = 'md' }) => {
-  let colorClass = '';
-  let dotClass = '';
-  let label = '';
+  const configs: Record<ComplianceStatus, { label: string; base: string; dot?: string }> = {
+    [ComplianceStatus.COMPLIANT]: {
+      label: 'Conforme',
+      base: 'bg-emerald-500/12 text-emerald-600 border border-emerald-500/25',
+      dot: 'bg-emerald-500'
+    },
+    [ComplianceStatus.PENDING]: {
+      label: 'En attente',
+      base: 'bg-amber-500/12 text-amber-600 border border-amber-500/25',
+      dot: 'bg-amber-500'
+    },
+    [ComplianceStatus.NON_COMPLIANT]: {
+      label: 'Non conforme',
+      base: 'bg-rose-500/12 text-rose-600 border border-rose-500/25',
+      dot: 'bg-rose-500'
+    },
+    [ComplianceStatus.UNDER_REVIEW]: {
+      label: 'En révision',
+      base: 'bg-blue-500/12 text-blue-600 border border-blue-500/25',
+      dot: 'bg-blue-500'
+    },
+    [ComplianceStatus.EXPIRED]: {
+      label: 'Expiré',
+      base: 'bg-red-500/12 text-red-500 border border-red-500/25',
+      dot: 'bg-red-500'
+    },
+    [ComplianceStatus.REJECTED]: {
+      label: 'Refusé',
+      base: 'bg-red-600/12 text-red-700 border border-red-600/25',
+      dot: 'bg-red-600'
+    },
+  };
 
-  switch (status) {
-    case ComplianceStatus.COMPLIANT:
-      colorClass = 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
-      dotClass = 'bg-emerald-500';
-      label = 'Conforme';
-      break;
-    case ComplianceStatus.PENDING:
-      colorClass = 'bg-amber-500/10 text-amber-500 border-amber-500/20';
-      dotClass = 'bg-amber-500';
-      label = 'En Attente';
-      break;
-    case ComplianceStatus.EXPIRED:
-      colorClass = 'bg-rose-500/10 text-rose-500 border-rose-500/20';
-      dotClass = 'bg-rose-500';
-      label = 'Expiré';
-      break;
-    case ComplianceStatus.REJECTED:
-      colorClass = 'bg-red-500/10 text-red-500 border-red-500/20';
-      dotClass = 'bg-red-500';
-      label = 'Rejeté';
-      break;
-    default:
-      colorClass = 'bg-gray-500/10 text-gray-500 border-gray-500/20';
-      dotClass = 'bg-gray-500';
-      label = status;
-  }
-
-  const sizeClass = size === 'sm' ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-sm';
+  const config = configs[status] || configs[ComplianceStatus.PENDING];
+  const isSmall = size === 'sm';
 
   return (
-    <span className={`inline-flex items-center gap-2 font-semibold rounded-full border ${colorClass} ${sizeClass} shadow-sm`}>
-      <span className="relative flex h-2 w-2">
-        <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${dotClass}`}></span>
-        <span className={`relative inline-flex rounded-full h-2 w-2 ${dotClass}`}></span>
-      </span>
-      {label}
+    <span className={`inline-flex items-center gap-1.5 font-semibold rounded-md ${config.base} ${isSmall ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-[11px]'}`}>
+      {config.dot && (
+        <span className={`inline-block rounded-full ${config.dot} ${isSmall ? 'w-1.5 h-1.5' : 'w-2 h-2'}`}></span>
+      )}
+      {config.label}
     </span>
   );
 };

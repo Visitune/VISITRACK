@@ -148,8 +148,67 @@ export const TEMPLATE_MICRO_ANALYSIS: PDFTemplate = {
     ]
 };
 
+export const TEMPLATE_TECHNICAL_SPECIFICATION: PDFTemplate = {
+    id: 'tech-spec-v1',
+    name: 'Fiche Technique Produit',
+    description: 'Extraction des ingrédients, allergènes et valeurs nutritionnelles',
+    category: 'SPECIFICATION',
+    extractionPoints: [
+        {
+            name: 'ingredients',
+            description: 'Liste complète des ingrédients',
+            criticity: 'CRITICAL',
+            synonyms: ['ingrédients', 'composition', 'ingredients list'],
+            expectedFormat: 'array'
+        },
+        {
+            name: 'allergens',
+            description: 'Allergènes présents ou traces',
+            criticity: 'CRITICAL',
+            synonyms: ['allergènes', 'allergens', 'contient', 'traces de'],
+            expectedFormat: 'array'
+        },
+        {
+            name: 'energy',
+            description: 'Valeur énergétique (kJ/kcal)',
+            criticity: 'MAJOR',
+            synonyms: ['énergie', 'energy', 'calories'],
+            expectedFormat: 'string'
+        },
+        {
+            name: 'fat',
+            description: 'Matières grasses totales',
+            criticity: 'MAJOR',
+            synonyms: ['matières grasses', 'fat', 'lipides'],
+            expectedFormat: 'string'
+        },
+        {
+            name: 'carbs',
+            description: 'Glucides totaux',
+            criticity: 'MAJOR',
+            synonyms: ['glucides', 'carbohydrates', 'carbs'],
+            expectedFormat: 'string'
+        },
+        {
+            name: 'protein',
+            description: 'Protéines',
+            criticity: 'MAJOR',
+            synonyms: ['protéines', 'protein'],
+            expectedFormat: 'string'
+        },
+        {
+            name: 'origin',
+            description: 'Pays d\'origine ou provenance',
+            criticity: 'MAJOR',
+            synonyms: ['origine', 'provenance', 'origin'],
+            expectedFormat: 'string'
+        }
+    ]
+};
+
 export const PDF_TEMPLATES = {
     IFS: TEMPLATE_IFS_CERTIFICATE,
     BRCGS: TEMPLATE_BRCGS_CERTIFICATE,
-    MICRO_ANALYSIS: TEMPLATE_MICRO_ANALYSIS
+    MICRO_ANALYSIS: TEMPLATE_MICRO_ANALYSIS,
+    TECHNICAL: TEMPLATE_TECHNICAL_SPECIFICATION
 };

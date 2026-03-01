@@ -3,7 +3,8 @@ export enum ComplianceStatus {
   PENDING = 'PENDING',
   EXPIRED = 'EXPIRED',
   REJECTED = 'REJECTED',
-  NON_COMPLIANT = 'NON_COMPLIANT'
+  NON_COMPLIANT = 'NON_COMPLIANT',
+  UNDER_REVIEW = 'UNDER_REVIEW'
 }
 
 export type OnboardingStep = 'NEW' | 'DOCS_PENDING' | 'REVIEW' | 'VALIDATED';
@@ -21,6 +22,8 @@ export interface Attachment {
   fileName: string;
   fileType: string;
   uploadDate: string;
+  issuanceDate?: string; // Date de création du document original
+  validUntil?: string;   // Date de validité / expiration
   size: string;
   url?: string;
   content?: string; // Base64 content for real persistence in packages
@@ -160,12 +163,20 @@ export interface AnnualReview {
   reportAttachmentId?: string;
 }
 
+export interface SAQResponse {
+  answer: 'YES' | 'NO' | 'PARTIAL' | 'NA' | '';
+  comment?: string;
+}
+
 export interface SupplierQuestionnaire {
   id: string;
   materialCategory: string;
+  createdAt?: string;
   completedDate?: string;
-  status: 'PENDING' | 'COMPLETED' | 'VALIDATED';
-  responses: Record<string, any>;
+  status: 'DRAFT' | 'SENT' | 'COMPLETED' | 'VALIDATED';
+  overallScore?: number;
+  modulesScore?: Record<string, number>;
+  responses: Record<string, SAQResponse>;
 }
 
 export interface CrisisAction {
@@ -194,11 +205,19 @@ export interface CrisisCase {
 
 export interface ProductVersion {
   id: string;
-  timestamp: string;
+  timestamp: string; // Date de création de la version
   author: string;
+  status: 'DRAFT' | 'ACTIVE' | 'OBSOLETE';
   ingredients: string[];
   allergens: string[];
+  nutrition?: {
+    energy?: string;
+    fat?: string;
+    carbs?: string;
+    protein?: string;
+  };
   specUrl?: string; // Link to the original document
+  attachmentId?: string; // Linked GED file
   diff?: string; // Summary of changes
 }
 
@@ -303,6 +322,7 @@ export interface Supplier {
   laboratoryAnalyses?: LaboratoryAnalysis[];
   annualReviews?: AnnualReview[];
   rawMaterials?: string[]; // IDs of RawMaterial
+  expectedDocumentTypes?: string[]; // e.g., 'CERTIFICATE', 'SAQ', 'ATTESTATION', 'POLITIQUE', 'ENGAGEMENT'
 }
 
 export interface AppNotification {
@@ -322,6 +342,7 @@ export interface AnalysisResult {
   riskAssessment: string;
   suggestedStatus: ComplianceStatus;
   confidence: number;
+  extractedData?: Record<string, any>;
   fieldScores?: {
     date: number;
     issuer: number;

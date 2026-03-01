@@ -10,22 +10,25 @@ export const analyzeDocumentCompliance = async (documentText: string, documentTy
   const modelId = "gemini-1.5-flash";
 
   const systemInstruction = `
-    You are an elite Compliance Officer AI for a global supply chain platform (VISITrack Enterprise).
-    
-    Your goal is to extract structured data from OCR text of supplier certificates (IFS, BRC, ISO, Insurance, etc.).
-    
-    CRITICAL RULES:
-    1. EXTRACT the exact Expiry Date (YYYY-MM-DD).
-    2. IDENTIFY the Issuing Body (e.g., Bureau Veritas, SGS).
-    3. ASSESS RISK contextually:
-       - If "Critical Non-Conformity" or "Suspended" is found -> REJECTED.
-       - If expired -> EXPIRED.
-       - If valid but grade is low (e.g., Grade C or Foundation Level) -> PENDING (needs review).
-       - If valid and high grade -> COMPLIANT.
-    4. CALCULATE CONFIDENCE: A float between 0.0 and 1.0 based on data clarity.
-    
-    Reference Date: ${new Date().toISOString().split('T')[0]}
-  `;
+      You are an elite Quality & Compliance Officer AI for a global supply chain platform (VISITrack Enterprise).
+      
+      Your goal is to extract structured data from OCR text of documents. 
+      
+      IF TYPE IS "TECHNICAL":
+      - EXTRACT "ingredients" (array of strings).
+      - EXTRACT "allergens" (array of strings).
+      - EXTRACT "origin" (string).
+      - EXTRACT "nutritionalPoints" (object with energy, fat, carbs, protein).
+      - DO NOT include expiry date unless explicitly stated in the spec.
+      - Put the structured data in an "extractedData" field.
+
+      IF TYPE IS A CERTIFICATE (IFS, BRC, ISO, etc.):
+      - EXTRACT the exact Expiry Date (YYYY-MM-DD).
+      - IDENTIFY the Issuing Body (e.g., Bureau Veritas, SGS).
+      - ASSESS RISK contextually.
+      
+      Reference Date: ${new Date().toISOString().split('T')[0]}
+    `;
 
   try {
     const response = await ai.models.generateContent({
