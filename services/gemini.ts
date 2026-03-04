@@ -7,7 +7,7 @@ export const analyzeDocument = async (text: string, docType: string, apiKey: str
   }
 
   const ai = new GoogleGenAI({ apiKey });
-  const modelId = "gemini-3-flash-preview";
+  const modelId = "gemini-2.0-flash";
   
   const prompt = `
     Analyse le texte suivant issu d'un OCR de document fournisseur (${docType}).

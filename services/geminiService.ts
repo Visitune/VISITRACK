@@ -7,7 +7,7 @@ export const analyzeDocumentCompliance = async (documentText: string, documentTy
   }
 
   const ai = new GoogleGenAI({ apiKey });
-  const modelId = "gemini-1.5-flash";
+  const modelId = "gemini-2.0-flash";
 
   const systemInstruction = `
       You are an elite Quality & Compliance Officer AI for a global supply chain platform (VISITrack Enterprise).
@@ -77,7 +77,7 @@ export const analyzeDocumentWithTemplate = async (
   }
 
   const ai = new GoogleGenAI({ apiKey });
-  const modelId = "gemini-1.5-flash";
+  const modelId = "gemini-2.0-flash";
 
   // Remove data:application/pdf;base64, prefix if present
   const base64Data = base64Content.includes(",") ? base64Content.split(",")[1] : base64Content;
