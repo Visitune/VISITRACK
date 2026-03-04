@@ -1,13 +1,12 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { AnalysisResult } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
-
-export const analyzeDocument = async (text: string, docType: string): Promise<AnalysisResult> => {
-  if (!process.env.API_KEY) {
-    throw new Error("API Key manquante");
+export const analyzeDocument = async (text: string, docType: string, apiKey: string): Promise<AnalysisResult> => {
+  if (!apiKey) {
+    throw new Error("Veuillez configurer votre clé API Gemini dans les Paramètres.");
   }
 
+  const ai = new GoogleGenAI({ apiKey });
   const modelId = "gemini-3-flash-preview";
   
   const prompt = `

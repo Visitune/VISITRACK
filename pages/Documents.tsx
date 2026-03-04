@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Sparkles, FileText, ArrowRight, CheckCircle, AlertOctagon, Loader2, UploadCloud } from 'lucide-react';
 import { analyzeDocument } from '../services/gemini';
 import { AnalysisResult } from '../types';
+import { useWorkspace } from '../context/WorkspaceContext';
 
 const Documents = () => {
+  const { settings } = useWorkspace();
   const [text, setText] = useState('');
   const [type, setType] = useState('Certificat BIO');
   const [loading, setLoading] = useState(false);
@@ -13,7 +15,7 @@ const Documents = () => {
     if (!text) return;
     setLoading(true);
     try {
-      const data = await analyzeDocument(text, type);
+      const data = await analyzeDocument(text, type, settings.geminiApiKey);
       setResult(data);
     } catch (e) {
       alert("Erreur d'analyse. Vérifiez votre clé API.");
