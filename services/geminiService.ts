@@ -77,7 +77,7 @@ export const analyzeDocumentWithTemplate = async (
   }
 
   const ai = new GoogleGenAI({ apiKey });
-  const modelId = "gemini-1.5-pro"; // Use Pro for better analysis of long documents
+  const modelId = "gemini-1.5-flash";
 
   // Remove data:application/pdf;base64, prefix if present
   const base64Data = base64Content.includes(",") ? base64Content.split(",")[1] : base64Content;
